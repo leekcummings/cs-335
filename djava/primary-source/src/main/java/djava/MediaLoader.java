@@ -22,8 +22,10 @@ public class MediaLoader {
 	
 	private
 	void loadSong(File file) { //loads all three things (can add genre here later)
-//		Song s = new Song(file);
-//		Album s = new Album(file);
+		if(file.getName().matches(".*\\.mp3")) { //seeing if its an mp3 file
+			Song s = new Song(file);
+			//Album a = new Album(file);
+		}
 //		Artist s = new Artist(file);
 	}
 	
