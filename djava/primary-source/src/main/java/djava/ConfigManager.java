@@ -56,10 +56,10 @@ public class ConfigManager {
 	
 	void setFileDirPath() {
 		if(opSys == OS.WINDOWS){ //windows
-			filePath = System.getProperty("user.home") + "\\AppData\\Local\\cs335\\config.json";
-			directoryPath = System.getProperty("user.home") + "\\AppData\\Local\\cs335";
-		} else { filePath = System.getProperty("user.home") + "/.config/cs335/config.json";
-		directoryPath = System.getProperty("user.home") + "/.config/cs335";} //unix
+			filePath = System.getProperty("user.home") + "\\AppData\\Local\\djava\\config.json";
+			directoryPath = System.getProperty("user.home") + "\\AppData\\Local\\djava";
+		} else { filePath = System.getProperty("user.home") + "/.config/djava/config.json";
+		directoryPath = System.getProperty("user.home") + "/.config/djava";} //unix
 		System.out.println("ConfigFilePath: " + filePath);
 	}
 	

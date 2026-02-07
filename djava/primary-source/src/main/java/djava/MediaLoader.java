@@ -13,6 +13,7 @@ public class MediaLoader {
 		for (final File file : dir.listFiles()) { //iterating through each file
 			if(file.isDirectory()) {readDirectory(file);} //if file is directory it recurses
 			else {
+				debugLog(MediaType.SONG,file.getName());
 				loadSong(file); //load in song
 				 //
 			}
@@ -21,12 +22,12 @@ public class MediaLoader {
 	
 	private
 	void loadSong(File file) { //loads all three things (can add genre here later)
-		Song s = new Song(file);
-		Album s = new Album(file);
-		Artist s = new Artist(file);
+//		Song s = new Song(file);
+//		Album s = new Album(file);
+//		Artist s = new Artist(file);
 	}
 	
 	void debugLog(MediaType type, String name) {
-		System.out.println("NOTE: " + songsLoaded + " " + name + " read in.");
+		System.out.println("NOTE: " + name + " read in.");
 	}
 }
