@@ -12,14 +12,14 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 public class Song extends Media{ //got rid of parent class because these objects are too different
 	
 	private
-	String filePath;
-	File file;
-	String songTitle;
-	String album;
-	String artist;
-	String year;
-	String trackNum;
-	String genre;
+	String filePath = null;
+	File file = null;
+	String songTitle = null;
+	String album = null;
+	String artist = null;
+	String year = null;
+	String trackNum = null;
+	String genre = null;
 	
 	public
 	Song(File songFile){
@@ -33,6 +33,7 @@ public class Song extends Media{ //got rid of parent class because these objects
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		MusicLib.addToLibrary(this, MediaType.SONG);
 	}
 	
 	public
@@ -64,7 +65,7 @@ public class Song extends Media{ //got rid of parent class because these objects
 			this.trackNum = id3v1Tag.getTrack(); //might be null for some but its okay (please account for)
 			this.genre = id3v1Tag.getGenreDescription();
 			
-			this.identifyingName = this.songTitle; //for sorting purposes and efficiency
+			this.setIdentifyingName(this.songTitle); //for sorting purposes and efficiency
 			
 		}else if(mp3file.hasId3v2Tag()) {
 			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
@@ -75,10 +76,9 @@ public class Song extends Media{ //got rid of parent class because these objects
 			this.trackNum = id3v2Tag.getTrack(); //might be null for some but its okay (please account for)
 			this.genre = id3v2Tag.getGenreDescription();
 			
-			this.identifyingName = this.songTitle; //for sorting purposes and efficiency (used in library for sorting and searching)
+			this.setIdentifyingName(this.songTitle); //for sorting purposes and efficiency (used in library for sorting and searching)
 			
 		}else {System.out.println("ERROR: Tag type not detectible/doesn't exist.");}
-		System.out.println(this.songTitle);
 	}
 	
 }

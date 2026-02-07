@@ -10,6 +10,8 @@ public class Driver {
 		MusicDirectory.setDefaultDirectory();
 		MusicDirectory.set("/home/izzygrl/Desktop/test");
 		ml.readDirectory(new File(MusicDirectory.get()));
+		
+		System.out.println(MusicLib.albumsUnsorted);
 	}
 
 }

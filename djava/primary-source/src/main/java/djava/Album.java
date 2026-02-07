@@ -6,9 +6,13 @@ public class Album extends Media{
 	ArrayList<Song> songs = new ArrayList<Song>();
 	String albumTitle;
 	String artist;
+	String genre;
 	
 	Album(Song song){
-		MusicLib.addToLibrary(this, MediaType.ALBUM);
+		this.albumTitle = song.getAlbum();
+		this.artist = song.getArtist();
+		this.genre = song.getGenre();
+		MusicLib.addToLibrary(this, MediaType.ALBUM);}
 	
 	public
 	
@@ -16,6 +20,5 @@ public class Album extends Media{
 	
 	String getArtist() {return(this.artist);}
 	
-	private
 		
 }
