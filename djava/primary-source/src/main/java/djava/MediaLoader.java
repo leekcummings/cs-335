@@ -10,10 +10,10 @@ public class MediaLoader {
 	
 	public
 	void readDirectory(File dir){ //recursive method that reads in all files in music directory
-		for (final File file : dir.listFiles()) { //iterating through each file
+		for (File file : dir.listFiles()) { //iterating through each file
 			if(file.isDirectory()) {readDirectory(file);} //if file is directory it recurses
 			else {
-				debugLog(MediaType.SONG,file.getName());
+				debugLog(MediaType.SONG,file.getAlbumTitle());
 				loadSong(file); //load in song
 				 //
 			}
