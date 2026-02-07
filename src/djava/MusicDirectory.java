@@ -9,8 +9,9 @@ public class MusicDirectory {
 	static void setDefaultDirectory(){ //gets operating sys from config
 								//and sets the correct default path
 		if(ConfigManager.opSys == OS.WINDOWS) {
-		directory = "C:\\Users\\{USERNAME}\\Music";
-		}else {directory = "$HOME/Music";}
+		directory = System.getProperty("user.home") + "\\{USERNAME}\\Music";
+		}else {directory = System.getProperty("user.home") + "/Music";}
+		System.out.println("MusicDirectoryPath: " + directory);
 	}
 	
 	static void set(String newFileDirectoryPath) {
