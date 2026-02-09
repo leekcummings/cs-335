@@ -17,7 +17,7 @@ public class MediaLoader {
 		for (File file : dir.listFiles()) { //iterating through each file
 			if(file.isDirectory()) {readDirectory(file);} //if file is directory it recurses
 			else {
-				debugLog(MediaType.SONG,file.getName());
+				//debugLog(MediaType.SONG,file.getName());
 				loadSong(file); //load in song
 				 //
 			}
@@ -27,7 +27,7 @@ public class MediaLoader {
 	private
 	void loadSong(File file) { //loads all three things (can add genre here later)
 		if(file.getName().matches(".*\\.mp3")) { //seeing if its an mp3 file
-			System.out.println("NOTE: " + file.getName() + " is an mp3.");
+			//System.out.println("NOTE: " + file.getName() + " is an mp3."); //FOR DEBUGGING
 			Song s = new Song(file);
 			Album al = new Album(s);
 			Artist ar = new Artist(al);
