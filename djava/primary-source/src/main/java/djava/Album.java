@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class Album extends Media{
 	private
 	ArrayList<Song> songs = new ArrayList<Song>();
-	String albumTitle;
-	String artist;
-	String genre;
+	String albumTitle = "Unknown";
+	String artist = "Unknown";
+	String genre = "Unknown";
 	Song song;
 	
 	public Album(Song song){

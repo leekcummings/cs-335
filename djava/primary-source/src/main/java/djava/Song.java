@@ -12,14 +12,14 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 public class Song extends Media{ //got rid of parent class because these objects are too different
 	
 	private
-	String filePath = null;
+	String filePath = "Unknown";
 	File file = null;
-	String songTitle = null;
-	String album = null;
-	String artist = null;
-	String year = null;
-	String trackNum = null;
-	String genre = null;
+	String songTitle = "Unknown";
+	String album = "Unknown";
+	String artist = "Unknown";
+	String year = "Unknown";
+	String trackNum = "Unknown";
+	String genre = "Unknown";
 	
 	public
 	Song(File songFile){
@@ -60,9 +60,9 @@ public class Song extends Media{ //got rid of parent class because these objects
 		if(mp3file.hasId3v1Tag()) {
 			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
 			System.out.println("NOTE: " + id3v1Tag.getTitle() + " has id3v1Tag metadata.");
-			this.songTitle = id3v1Tag.getTitle();
-			this.album = id3v1Tag.getAlbum();
-			this.artist = id3v1Tag.getArtist();
+			if(id3v1Tag.getTitle() != null) {this.songTitle = id3v1Tag.getTitle();}
+			if(id3v1Tag.getAlbum() != null) {this.album = id3v1Tag.getAlbum();}
+			if(id3v1Tag.getArtist() != null) {this.artist = id3v1Tag.getArtist();}
 			this.year = id3v1Tag.getYear();	//might be null for some but its okay (please account for)
 			this.trackNum = id3v1Tag.getTrack(); //might be null for some but its okay (please account for)
 			this.genre = id3v1Tag.getGenreDescription();
@@ -71,13 +71,13 @@ public class Song extends Media{ //got rid of parent class because these objects
 			
 		}else if(mp3file.hasId3v2Tag()) {
 			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-			System.out.println("NOTE: " + id3v2Tag.getTitle() + " has id3v1Tag metadata.");
-			this.songTitle = id3v2Tag.getTitle();
-			this.album = id3v2Tag.getAlbum();
-			this.artist = id3v2Tag.getArtist();
-			this.year = id3v2Tag.getYear();	//might be null for some but its okay (please account for)
-			this.trackNum = id3v2Tag.getTrack(); //might be null for some but its okay (please account for)
-			this.genre = id3v2Tag.getGenreDescription();
+			System.out.println("NOTE: " + id3v2Tag.getTitle() + " has id3v2Tag metadata.");
+			if(id3v2Tag.getTitle() != null) {this.songTitle = id3v2Tag.getTitle();}
+			if(id3v2Tag.getAlbum() != null) {this.album = id3v2Tag.getAlbum();}
+			if(id3v2Tag.getArtist() != null) {this.artist = id3v2Tag.getArtist();}
+			if(id3v2Tag.getYear() != null) {this.year = id3v2Tag.getYear();}	//might be null for some but its okay (please account for)
+			if(id3v2Tag.getTrack() != null) {this.trackNum = id3v2Tag.getTrack();} //might be null for some but its okay (please account for)
+			if(id3v2Tag.getGenreDescription() != null) {this.genre = id3v2Tag.getGenreDescription();}
 			
 			this.setIdentifyingName(this.songTitle); //for sorting purposes and efficiency (used in library for sorting and searching)
 			

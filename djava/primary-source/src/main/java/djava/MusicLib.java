@@ -26,14 +26,14 @@ public class MusicLib {
 		//SONG CASE
 		case SONG:
 			Song song = (Song) media; //changing it from media to song
-			if(songExists(song)) { //if the album name key already exists
+			if(songsUnsorted.containsKey(song.getSongTitle())) { //if the album name key already exists
 				System.out.println("NOTE: Song title '" + song.getSongTitle() + "' exists in map.");
 				songsUnsorted.get(song.getSongTitle()).add(song); //adds song object to the map list
 				//this for loop is seeing if there is an album in it that doesn't share an artist with it
 			}else { //if it doesn't exist it makes it exist
 				System.out.println("NOTE: Song title '" + song.getSongTitle() + "' does not exist in map.");
 				//addToList adds to array and does insertion sort
-				addToList(songsSorted, song.getSongTitle()); //adding song to sorted list
+				songsSorted.add(song.getSongTitle()); //adding song to sorted list
 				ArrayList<Song> songList = new ArrayList<>();
 				songList.add(song);
 				songsUnsorted.put(song.getSongTitle(), songList); //adding album to the map
@@ -45,7 +45,7 @@ public class MusicLib {
 		//ALBUM CASE
 		case ALBUM:
 			Album album = (Album) media;
-			if(albumExists(album)) { //if the album name key already exists
+			if(albumsUnsorted.containsKey(album.getAlbumTitle())) { //if the album name key already exists
 				boolean exists = false;
 				//this for loop is seeing if there is an album in it that doesn't share an artist with it
 				for(Album existingAlbum : albumsUnsorted.get(album.getAlbumTitle())) {
@@ -58,7 +58,7 @@ public class MusicLib {
 					System.out.println("NOTE: " + album.getAlbumTitle() + " by " + album.getArtist() + "was added to album library.");
 				}else {album = null;} //else DELETE THE OBJECT (don't need all this floating around
 			}else { //if it doesn't exist it makes it exist
-				addToList(albumsSorted, album.getAlbumTitle());
+				albumsSorted.add(album.getAlbumTitle());
 				ArrayList<Album> albumList = new ArrayList<Album>();
 				albumList.add(album);
 				albumsUnsorted.put(album.getAlbumTitle(), albumList); //adding album to the map
@@ -70,12 +70,12 @@ public class MusicLib {
 		// ARTIST CASE
 		case ARTIST:
 			Artist artist = (Artist) media;
-			if(artistExists(artist)) { //if the album name key already exists
+			if(artistsUnsorted.containsKey(artist.getName())) { //if the album name key already exists
 				artistsUnsorted.get(artist.getName()).addAlbum(artist.getAlbum());
 				artist = null; //delete object
 				//this for loop is seeing if there is an album in it that doesn't share an artist with it
 			}else { //if it doesn't exist it makes it exist
-				addToList(artistsSorted, artist.getName());
+				artistsSorted.add(artist.getName());
 				ArrayList<Artist> artistList = new ArrayList<>();
 				artistList.add(artist);
 				artistsUnsorted.put(artist.getName(), artist); //adding album to the map
@@ -88,70 +88,26 @@ public class MusicLib {
 		}
 	}
 	
-	void searchLib(MediaType type) {
-		
+	static void sortLists() {
+		sortList(songsSorted); //sort songs
+		sortList(albumsSorted); //sort albums
+		sortList(artistsSorted); //sort artists
 	}
 	
-	//adds sorted list for checkbinary search to check if its there, keeps things cleaner (might be able to just add
-	//to another function but for now we will keep these separate)
-	static boolean checkLib(MediaType type, Media media) {
-		switch(type) {
-		case SONG:
-			if(checkBinarySearch(songsSorted, media.getIdentifyingName())) {return(true);}
-			else return(false);
-		case ALBUM: //has to be like this so its more efficient 
-			if(checkBinarySearch(albumsSorted, media.getIdentifyingName())) {return(true);}
-			else return(false);
-		case ARTIST:
-			if(checkBinarySearch(artistsSorted, media.getIdentifyingName())){return(true);}
-			else return(false);
-		default: return(false);
-		}
-	}
-	
-	//binary search that returns a boolean to check if its in there at all
-	static boolean checkBinarySearch(ArrayList<String> sorted, String name) {
-		System.out.println("NOTE: Binary Search check for '" + name + "' started.");
-		if(sorted.isEmpty()) {return(false);}
-		if(sorted.size()==1){if (sorted.get(0).compareTo(name) == 0) {return(true);} else {return(false);}}
-		int low = 0;
-		int high = sorted.size();
-		while(low <= high) {
-			int middleValueIndex = low + (high-low) / 2;
-			System.out.println("low= " + low + "mid= " + middleValueIndex + "high= " + high);
-			if(sorted.get(middleValueIndex).compareTo(name) == 0) {return(true);}
-			if(sorted.get(middleValueIndex).compareTo(name) < 0) {
-				high = middleValueIndex - 1; break;
-			}else {
-				low = middleValueIndex + 1; break;
-			}}
-		return(false);
-	}
+	ArrayList<String> searchLib(MediaType type, Media media) {
+		ArrayList<String> results = new ArrayList<>();
+		return(results);
+	}	
 	
 	private
-	static void addToList(ArrayList<String> list, String item) {
-		int current = 0;
-		if(list.isEmpty()) {
-			list.add(item);
-		}else { //might add an if else here to check if its bigger than the last one for speed reasons
-			//while loop inserting or seeing if it needs to go at the end
-			while(list.get(current).compareTo(item) == 1 || current > list.size()) { //while item is less than current
-				current++;
-			}
-			list.add(current,item);
-		}
-		
+	static void sortList(ArrayList<String> list) {
 		
 	}
-	
-	static boolean songExists(Song song) {return(checkLib(MediaType.SONG, song));}
-	
-	static boolean albumExists(Album album) { return(checkLib(MediaType.ALBUM, album));}
-	
-	static boolean artistExists(Artist artist) { return(checkLib(MediaType.ARTIST, artist));}
-	
-	
-}
+		
+	}
+
+
+
 
 
 //i was very hungry when i wrote this and its very inefficient but i'm just going to keep
@@ -180,6 +136,8 @@ public class MusicLib {
 
 
 
+//below wasn't working because compareTo doesn't work like i thought it would
+//and i am switch/case happy :3 lolz
 //System.out.println("NOTE: Binary Search check for '" + name + "' started.");
 //if(sorted.isEmpty()) {return(false);}
 //if(sorted.size()==1){if (sorted.get(0).compareTo(name) == 0) {return(true);} else {return(false);}}
@@ -203,3 +161,62 @@ public class MusicLib {
 //	case -1: high = middleValueIndex - 1; break;
 //	default: break;}}
 //return(false);
+
+
+//long story short i found out searching hashmaps is O(1) time :|
+//static boolean songExists(Song song) {return(checkLib(MediaType.SONG, song));}
+//
+//static boolean albumExists(Album album) { return(checkLib(MediaType.ALBUM, album));}
+//
+//static boolean artistExists(Artist artist) { return(checkLib(MediaType.ARTIST, artist));}
+
+////adds sorted list for checkbinary search to check if its there, keeps things cleaner (might be able to just add
+//	//to another function but for now we will keep these separate)
+//	static boolean checkLib(MediaType type, Media media) {
+//		switch(type) {
+//		case SONG:
+//			if(checkBinarySearch(songsSorted, media.getIdentifyingName())) {return(true);}
+//			else return(false);
+//		case ALBUM: //has to be like this so its more efficient 
+//			if(checkBinarySearch(albumsSorted, media.getIdentifyingName())) {return(true);}
+//			else return(false);
+//		case ARTIST:
+//			if(checkBinarySearch(artistsSorted, media.getIdentifyingName())){return(true);}
+//			else return(false);
+//		default: return(false);
+//		}
+//	}
+//	
+//	//binary search that returns a boolean to check if its in there at all
+//	static boolean checkBinarySearch(ArrayList<String> sorted, String name) {
+//		System.out.println("NOTE: Binary Search check for '" + name + "' started.");
+//		if(sorted.isEmpty()) {return(false);}
+//		if(sorted.size()==1){if (sorted.get(0).compareTo(name) == 0) {return(true);} else {return(false);}}
+//		int low = 0;
+//		int high = sorted.size();
+//		while(low <= high) {
+//			int middleValueIndex = low + (high-low) / 2;
+//			if(sorted.get(middleValueIndex).compareTo(name) == 0) {
+//				System.out.println("NOTE: Binary Search check for '" + name + "' concluded - FOUND.");
+//				return(true);}
+//			if(sorted.get(middleValueIndex).compareTo(name) < 0) { //if mid value is greater than name
+//				high = middleValueIndex - 1; break;
+//			}else {
+//				low = middleValueIndex + 1; break;
+//			}}
+//		System.out.println("NOTE: Binary Search check for '" + name + "' concluded - NOT FOUND.");
+//		return(false);
+//	}
+
+//private
+//static void addToList(ArrayList<String> list, String item) {
+//	int current = 0;
+//	if(list.isEmpty()) {
+//		list.add(item);
+//	}else { //might add an if else here to check if its bigger than the last one for speed reasons
+//		//while loop inserting or seeing if it needs to go at the end
+//		while(list.get(current).compareTo(item) == 1 || current > list.size()) { //while item is less than current
+//			current++;
+//		}
+//		list.add(current,item);
+//	}

@@ -5,7 +5,7 @@ public class Media {
 	//can all exist and be treated as media, no shared attributes
 	//at the moment :3
 	
-	private String identifyingName = null;
+	private String identifyingName = "Unknown";
 	
 	public
 	void setIdentifyingName(String newIdentName) {this.identifyingName = newIdentName;}
