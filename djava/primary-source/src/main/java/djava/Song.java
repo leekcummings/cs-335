@@ -33,6 +33,7 @@ public class Song extends Media{ //got rid of parent class because these objects
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("NOTE: " + file.getName() + " metadata successfully parsed.");
 		MusicLib.addToLibrary(this, MediaType.SONG);
 	}
 	
@@ -58,6 +59,7 @@ public class Song extends Media{ //got rid of parent class because these objects
 		Mp3File mp3file = new Mp3File(file);
 		if(mp3file.hasId3v1Tag()) {
 			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
+			System.out.println("NOTE: " + id3v1Tag.getTitle() + " has id3v1Tag metadata.");
 			this.songTitle = id3v1Tag.getTitle();
 			this.album = id3v1Tag.getAlbum();
 			this.artist = id3v1Tag.getArtist();
@@ -69,6 +71,7 @@ public class Song extends Media{ //got rid of parent class because these objects
 			
 		}else if(mp3file.hasId3v2Tag()) {
 			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+			System.out.println("NOTE: " + id3v2Tag.getTitle() + " has id3v1Tag metadata.");
 			this.songTitle = id3v2Tag.getTitle();
 			this.album = id3v2Tag.getAlbum();
 			this.artist = id3v2Tag.getArtist();

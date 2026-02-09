@@ -101,7 +101,7 @@ public class MenuManager {
 	
 	void setDirectory() {
 		//get the directory and then set it give brief instruction on how
-		String newDirectory;
+		String newDirectory = null;
 		//get input
 		MusicDirectory.set(newDirectory);
 	}

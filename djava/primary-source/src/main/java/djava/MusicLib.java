@@ -11,6 +11,8 @@ public class MusicLib {
 	static HashMap<String, Artist> artistsUnsorted = new HashMap<>();
 	
 	//ArrayLists
+	//these are sorted so that you can do a binary search on them to know if one exists, and then get it from the
+	//unsorted hashmaps that hold the same string that is stored here, along with the object (be it song, album or artist)
 	static ArrayList<String> songsSorted = new ArrayList<>();
 	static ArrayList<String> albumsSorted = new ArrayList<>();
 	static ArrayList<String> artistsSorted = new ArrayList<>();
@@ -19,39 +21,66 @@ public class MusicLib {
 	public
 	static void addToLibrary(Media media, MediaType type) {
 		switch(type) {
+		
+		
+		//SONG CASE
 		case SONG:
-			Song song = (Song) media;
+			Song song = (Song) media; //changing it from media to song
 			if(songExists(song)) { //if the album name key already exists
+				System.out.println("NOTE: Song title '" + song.getSongTitle() + "' exists in map.");
 				songsUnsorted.get(song.getSongTitle()).add(song); //adds song object to the map list
 				//this for loop is seeing if there is an album in it that doesn't share an artist with it
 			}else { //if it doesn't exist it makes it exist
-				songsSorted.add(song.getSongTitle()); //adding song to sorted list
+				System.out.println("NOTE: Song title '" + song.getSongTitle() + "' does not exist in map.");
+				//addToList adds to array and does insertion sort
+				addToList(songsSorted, song.getSongTitle()); //adding song to sorted list
 				ArrayList<Song> songList = new ArrayList<>();
 				songList.add(song);
 				songsUnsorted.put(song.getSongTitle(), songList); //adding album to the map
-				System.out.println("NOTE: " + song.getSongTitle() + " by " + song.getArtist() + " was added to song library.");
 			}
+			System.out.println("NOTE: " + song.getSongTitle() + " by " + song.getArtist() + " was added to song library.");
 			break;
+		
+			
+		//ALBUM CASE
 		case ALBUM:
 			Album album = (Album) media;
 			if(albumExists(album)) { //if the album name key already exists
 				boolean exists = false;
 				//this for loop is seeing if there is an album in it that doesn't share an artist with it
 				for(Album existingAlbum : albumsUnsorted.get(album.getAlbumTitle())) {
-					if (existingAlbum.getArtist().equals(album.getArtist())) {exists = true;}}
+					if (existingAlbum.getArtist().equals(album.getArtist())) {
+						exists = true;
+						existingAlbum.addSong(album.getSong());//if it exists add the song from current to this
+					}}
 				if(!exists) {
 					albumsUnsorted.get(album.getAlbumTitle()).add(album); //adds album to the arraylist of albums at the key point in map
 					System.out.println("NOTE: " + album.getAlbumTitle() + " by " + album.getArtist() + "was added to album library.");
 				}else {album = null;} //else DELETE THE OBJECT (don't need all this floating around
 			}else { //if it doesn't exist it makes it exist
-				albumsSorted.add(album.getAlbumTitle()); //adding song to sorted list
+				addToList(albumsSorted, album.getAlbumTitle());
 				ArrayList<Album> albumList = new ArrayList<Album>();
 				albumList.add(album);
 				albumsUnsorted.put(album.getAlbumTitle(), albumList); //adding album to the map
 				System.out.println("NOTE: " + album.getAlbumTitle() + " by " + album.getArtist() + " was added to album library.");
 			}
 			break;
+		
+			
+		// ARTIST CASE
 		case ARTIST:
+			Artist artist = (Artist) media;
+			if(artistExists(artist)) { //if the album name key already exists
+				artistsUnsorted.get(artist.getName()).addAlbum(artist.getAlbum());
+				artist = null; //delete object
+				//this for loop is seeing if there is an album in it that doesn't share an artist with it
+			}else { //if it doesn't exist it makes it exist
+				addToList(artistsSorted, artist.getName());
+				ArrayList<Artist> artistList = new ArrayList<>();
+				artistList.add(artist);
+				artistsUnsorted.put(artist.getName(), artist); //adding album to the map
+				System.out.println("NOTE: " + artist.getName() + " was added to artist library.");
+			}
 			break;
 		default:
 			//probably good practice to put some kind of note here
@@ -63,6 +92,8 @@ public class MusicLib {
 		
 	}
 	
+	//adds sorted list for checkbinary search to check if its there, keeps things cleaner (might be able to just add
+	//to another function but for now we will keep these separate)
 	static boolean checkLib(MediaType type, Media media) {
 		switch(type) {
 		case SONG:
@@ -78,11 +109,16 @@ public class MusicLib {
 		}
 	}
 	
+	//binary search that returns a boolean to check if its in there at all
 	static boolean checkBinarySearch(ArrayList<String> sorted, String name) {
+		System.out.println("NOTE: Binary Search check for '" + name + "' started.");
+		if(sorted.isEmpty()) {return(false);}
+		if(sorted.size()==1){if (sorted.get(0).compareTo(name) == 0) {return(true);} else {return(false);}}
 		int low = 0;
-		int high = sorted.size()-1;
+		int high = sorted.size();
 		while(low <= high) {
 			int middleValueIndex = low + (high-low) / 2;
+			System.out.println("low= " + low + "mid= " + middleValueIndex + "high= " + high);
 			int compared = sorted.get(middleValueIndex).compareTo(name);
 				//BELOW EXPLAINS THE SWITCH CASE :P
 				//for compareTo if it returns a 0 they are equal, if it returns
@@ -93,38 +129,34 @@ public class MusicLib {
 			//they are equal
 			case 0: return(true);
 			// first value(middle) is greater than name
-			case 1: high = middleValueIndex - 1; break;
+			case 1: low = middleValueIndex + 1; break;
 			// middle is less than name
-			case -1: low = middleValueIndex + 1; break;
+			case -1: high = middleValueIndex - 1; break;
 			default: break;}}
 		return(false);
 	}
 	
 	private
+	static void addToList(ArrayList<String> list, String item) {
+		int current = 0;
+		if(list.isEmpty()) {
+			list.add(item);
+		}else { //might add an if else here to check if its bigger than the last one for speed reasons
+			//while loop inserting or seeing if it needs to go at the end
+			while(list.get(current).compareTo(item) == 1 || current > list.size()) { //while item is less than current
+				current++;
+			}
+			list.add(current,item);
+		}
+		
+		
+	}
+	
 	static boolean songExists(Song song) {return(checkLib(MediaType.SONG, song));}
 	
 	static boolean albumExists(Album album) { return(checkLib(MediaType.ALBUM, album));}
 	
 	static boolean artistExists(Artist artist) { return(checkLib(MediaType.ARTIST, artist));}
-	
-	
-	void sortLists() {
-		sortList(songsSorted);
-		sortList(albumsSorted);
-		sortList(artistsSorted);
-	}
-	
-	void sortList(ArrayList<String> list) {
-		bucketSort();
-	}
-	
-	void bucketSort() {
-		
-	}
-	
-	void mergeSort() {
-		
-	}
 	
 	
 }
