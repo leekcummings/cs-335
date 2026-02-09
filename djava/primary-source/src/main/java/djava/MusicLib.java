@@ -119,20 +119,12 @@ public class MusicLib {
 		while(low <= high) {
 			int middleValueIndex = low + (high-low) / 2;
 			System.out.println("low= " + low + "mid= " + middleValueIndex + "high= " + high);
-			int compared = sorted.get(middleValueIndex).compareTo(name);
-				//BELOW EXPLAINS THE SWITCH CASE :P
-				//for compareTo if it returns a 0 they are equal, if it returns
-				//a -1 the first value is less than the second and if its a
-				//1 then the first value is greater than the second
-				// a a = 0 | a b = -1 | b a = 1 <-- example
-			switch(compared) {
-			//they are equal
-			case 0: return(true);
-			// first value(middle) is greater than name
-			case 1: low = middleValueIndex + 1; break;
-			// middle is less than name
-			case -1: high = middleValueIndex - 1; break;
-			default: break;}}
+			if(sorted.get(middleValueIndex).compareTo(name) == 0) {return(true);}
+			if(sorted.get(middleValueIndex).compareTo(name) < 0) {
+				high = middleValueIndex - 1; break;
+			}else {
+				low = middleValueIndex + 1; break;
+			}}
 		return(false);
 	}
 	
@@ -185,3 +177,29 @@ public class MusicLib {
 //		checkBinarySearch(secondHalf, name);
 //		break;
 //	default: break;
+
+
+
+//System.out.println("NOTE: Binary Search check for '" + name + "' started.");
+//if(sorted.isEmpty()) {return(false);}
+//if(sorted.size()==1){if (sorted.get(0).compareTo(name) == 0) {return(true);} else {return(false);}}
+//int low = 0;
+//int high = sorted.size();
+//while(low <= high) {
+//	int middleValueIndex = low + (high-low) / 2;
+//	System.out.println("low= " + low + "mid= " + middleValueIndex + "high= " + high);
+//	int compared = sorted.get(middleValueIndex).compareTo(name);
+//		//BELOW EXPLAINS THE SWITCH CASE :P  
+//		//for compareTo if it returns a 0 they are equal, if it returns
+//		//a -1 the first value is less than the second and if its a
+//		//1 then the first value is greater than the second
+//		// a a = 0 | a b = -1 | b a = 1 <-- example
+//	switch(compared) {
+//	//they are equal
+//	case 0: return(true);
+//	// first value(middle) is greater than name
+//	case 1: low = middleValueIndex + 1; break;
+//	// middle is less than name
+//	case -1: high = middleValueIndex - 1; break;
+//	default: break;}}
+//return(false);
