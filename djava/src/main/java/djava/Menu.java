@@ -1,5 +1,5 @@
 package djava;
 
-public enum Menus {
+public enum Menu {
 	MAIN,SEARCH,OPTIONS,MUSIC_LIBRARY
 }

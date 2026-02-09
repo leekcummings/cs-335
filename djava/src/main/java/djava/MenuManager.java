@@ -1,7 +1,7 @@
 package djava;
 
 public class MenuManager {
-	Menus currentMenu = Menus.MAIN;
+	Menu currentMenu = Menu.MAIN;
 	
 	public
 	void parse(String input) {
