@@ -13,7 +13,7 @@ public class MediaLoader {
 		readDirectory(dir);
 		MusicLib.sortLists();
 	}
-	void readDirectory(File dir){ //recursive method that reads in all files in music directory
+	static void readDirectory(File dir){ //recursive method that reads in all files in music directory
 		for (File file : dir.listFiles()) { //iterating through each file
 			if(file.isDirectory()) {readDirectory(file);} //if file is directory it recurses
 			else {
@@ -25,7 +25,7 @@ public class MediaLoader {
 	}
 	
 	private
-	void loadSong(File file) { //loads all three things (can add genre here later)
+	static void loadSong(File file) { //loads all three things (can add genre here later)
 		if(file.getName().matches(".*\\.mp3")) { //seeing if its an mp3 file
 			//System.out.println("NOTE: " + file.getName() + " is an mp3."); //FOR DEBUGGING
 			Song s = new Song(file);

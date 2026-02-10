@@ -2,6 +2,7 @@ package djava;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class MusicLib {
 	// Bella set these up if you have any questions
@@ -17,6 +18,8 @@ public class MusicLib {
 	static ArrayList<String> albumsSorted = new ArrayList<>();
 	static ArrayList<String> artistsSorted = new ArrayList<>();
 	
+	static Scanner sc = new Scanner(System.in);
+	MenuManager mm = new MenuManager();
 	
 	public
 	static void addToLibrary(Media media, MediaType type) {
@@ -94,22 +97,102 @@ public class MusicLib {
 			//probably good practice to put some kind of note here
 			break;
 		}
+	}static void viewAlbums() {
+		boolean chosen = false;
+		int countUp = 1;
+		while(!chosen) {
+			System.out.println(countUp + ". " + albumsSorted.get(countUp-1));
+			countUp ++;
+			if(countUp%25 == 0 || countUp > albumsSorted.size()) {
+				if(countUp >= albumsSorted.size()) {countUp = 1;}
+				System.out.println("Hit ENTER for more or type ALBUM NUMBER to access album. (or type 0 to return)");
+				String input = sc.nextLine();
+				if(input.compareTo("") != 0) {
+					MenuManager.parse(input);
+					chosen = true;
+				}
+			}
+		}
+		
+	}
+	
+	static void viewArtists() {
+		boolean chosen = false;
+		int countUp = 1;
+		while(!chosen) {
+			System.out.println(countUp + ". " + artistsSorted.get(countUp-1));
+			countUp ++;
+			if(countUp%25 == 0 || countUp > artistsSorted.size()) {
+				if(countUp >= artistsSorted.size()) {countUp = 1;}
+				System.out.println("Hit ENTER for more or type ARTIST NUMBER to access artist. (or type 0 to return)");
+				String input = sc.nextLine();
+				if(input.compareTo("") != 0) {
+					MenuManager.parse(input);
+					chosen = true;
+				}
+			}
+		}
+		
+	}
+	
+	static void viewSongs() {
+		boolean chosen = false;
+		int countUp = 1;
+		while(!chosen) {
+			System.out.println(countUp + ". " + songsSorted.get(countUp-1));
+			countUp ++;
+			if(countUp%25 == 0 || countUp > songsSorted.size()) {
+				if(countUp >= songsSorted.size()) {countUp = 1;}
+				System.out.println("Hit ENTER for more or type SONG NUMBER to access song. (or type 0 to return)");
+				String input = sc.nextLine();
+				if(input.compareTo("") != 0) {
+					MenuManager.parse(input);
+					chosen = true;
+				}
+			}
+		}
+		
+	}
+	
+	
+	static void getSong(int index) {
+		Song song = null;
+		if(songsUnsorted.get(songsSorted.get(index)).size() == 1) {
+			song = songsUnsorted.get(songsSorted.get(index)).get(0);
+		} else {
+			// this else case shouldn't come up often
+			int countUp = 1;
+			boolean chosen = false;
+			while (!chosen){
+				for(Song songsSameName: songsUnsorted.get(songsSorted.get(index))) {
+					System.out.println(countUp + ". " + songsSameName);
+					countUp ++;
+					String input = sc.nextLine();
+					int inputNum;
+					try {
+						inputNum = Integer.parseInt(input);
+						if(inputNum <= songsUnsorted.get(songsSorted.get(index)).size()){
+							song = songsUnsorted.get(songsSorted.get(index)).get(inputNum-1);
+							chosen = true;
+						}else {System.out.println("Input out of range.");}
+					}catch(NumberFormatException e){
+						inputNum = 0;
+						System.out.println("Input not in valid format please input number of song you want to access.");
+					}
+				}
+			}
+		}
+		System.out.println(song.getSongTitle());
 	}
 	
 	static void sortLists() {
-		sortList(songsSorted); //sort songs
-		sortList(albumsSorted); //sort albums
-		sortList(artistsSorted); //sort artists
+		songsSorted.sort(null);
+		albumsSorted.sort(null);; //sort albums
+		artistsSorted.sort(null); //sort artists
 	}
 	
 	ArrayList<String> searchLib(MediaType type, Media media) {
 		ArrayList<String> results = new ArrayList<>();
 		return(results);
 	}	
-	
-	private
-	static void sortList(ArrayList<String> list) {
-		
-	}
-		
-	}
+}
