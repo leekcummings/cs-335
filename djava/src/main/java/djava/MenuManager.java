@@ -33,26 +33,31 @@ public class MenuManager {
 			break;
 	
 		case SEARCH:
-			if(inputNum == 1) {MusicLib.viewAlbums();}
-			else if(inputNum == 2) {MusicLib.viewArtists();}
-			else if(inputNum == 3) {MusicLib.viewSongs();}
+			if(inputNum == 1) {albums();}
+			else if(inputNum == 2) {artists();}
+			else if(inputNum == 3) {songs();}
 			else {returnToMainMenu();}
 			break;
 		case MUSIC_LIBRARY:
-			if(inputNum == 0) {musicLibrary();}
-			else {MusicLib.getSong(inputNum-1);}
+			if(inputNum == -1) {musicLibrary();}
+			if(inputNum == 0){mainMenu();}
 			break;
 		case OPTIONS:
 			if(inputNum == 1) {setDirectory();}
 			else if(inputNum == 2) {reloadLib();}
-			else if(inputNum == 3) {MusicLib.viewSongs();}
 			else {returnToMainMenu();}
 			break;
 		case SONGS:
+			if(inputNum == 0) {returnToSongs();}
+			if(inputNum == -1){returnToSongs();}
 			break;
 		case ALBUMS:
+			if(inputNum == 0) {returnToAlbums();}
+			if(inputNum == -1){returnToAlbums();}
 			break;
 		case ARTISTS:
+			if(inputNum == 0) {returnToArtists();}
+			if(inputNum == -1){returnToArtists();}
 			break;
 			}
 		
@@ -73,7 +78,7 @@ public class MenuManager {
 	
 	static void musicLibrary() {
 		currentMenu = Menu.MUSIC_LIBRARY;
-		MusicLib.viewSongs();
+		MusicLib.viewSongs(""); //searches for everything
 	}
 	
 	static void searchMenu() {
@@ -87,15 +92,34 @@ public class MenuManager {
 	}
 	 //for searching, they are their own menus so that you can return to them
 	static void songs() {
+		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.SONGS;}
+		System.out.println("1. Search\n2. Browse");
+		String input = sc.nextLine();
+		if(input.equals("1")) {
+			System.out.println("Search: ");
+			MusicLib.viewSongs(sc.next());
+		}else {MusicLib.viewSongs("");}
 		
 	}
 	
 	static void albums() {
-		
+		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.ALBUMS;}
+		System.out.println("1. Search\n2. Browse");
+		String input = sc.nextLine();
+		if(input.equals("1")) {
+			System.out.println("Search: ");
+			MusicLib.viewAlbums(sc.next());
+		}else {MusicLib.viewAlbums("");}
 	}
 	
 	static void artists() {
-		
+		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.ARTISTS;}
+		System.out.println("1. Search\n2. Browse");
+		String input = sc.nextLine();
+		if(input.equals("1")) {
+			System.out.println("Search: ");
+			MusicLib.viewArtists(sc.next());
+		}else {MusicLib.viewArtists("");}
 	}
 	
 	static void options() {
@@ -125,6 +149,18 @@ public class MenuManager {
 	}
 	
 	static void returnToSearchMenu() {
+		searchMenu();
+	}
+	
+	static void returnToSongs() {
+		searchMenu();
+	}
+	
+	static void returnToAlbums() {
+		searchMenu();
+	}
+	
+	static void returnToArtists() {
 		searchMenu();
 	}
 	

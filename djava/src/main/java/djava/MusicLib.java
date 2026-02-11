@@ -97,96 +97,203 @@ public class MusicLib {
 			//probably good practice to put some kind of note here
 			break;
 		}
-	}static void viewAlbums() {
+	}
+	
+	
+	
+	static void viewAlbums(String regex) {
+		ArrayList<String> alike = new ArrayList<>();
 		boolean chosen = false;
+		int iterate = 0;
 		int countUp = 1;
 		while(!chosen) {
-			System.out.println(countUp + ". " + albumsSorted.get(countUp-1));
-			countUp ++;
-			if(countUp%25 == 0 || countUp > albumsSorted.size()) {
-				if(countUp >= albumsSorted.size()) {countUp = 1;}
+			if(albumsSorted.get(iterate).toLowerCase().contains(regex.toLowerCase())) {
+				System.out.println(countUp + ". " + albumsSorted.get(iterate));
+				alike.add(albumsSorted.get(iterate));
+				countUp ++;
+			}
+			iterate++;
+			
+			if(countUp%25 == 0 || iterate >= albumsSorted.size()) {
+				if(iterate >= albumsSorted.size()) {countUp = 1; iterate = 0;}
 				System.out.println("Hit ENTER for more or type ALBUM NUMBER to access album. (or type 0 to return)");
 				String input = sc.nextLine();
 				if(input.compareTo("") != 0) {
-					MenuManager.parse(input);
-					chosen = true;
-				}
+					if(input.compareTo("0")==0) {MenuManager.parse(input); chosen = true;} //this SHOULD send you back?????????? (it doesn't)
+					else {
+					try {
+						getAlbum(Integer.parseInt(input),alike);
+						chosen = true;
+						}catch(NumberFormatException e) {
+						chosen = false;
+						System.out.println("Could not parse input.");
 			}
-		}
+		}}}}
 		
 	}
 	
-	static void viewArtists() {
+	static void viewArtists(String regex) {
+		ArrayList<String> alike = new ArrayList<>();
 		boolean chosen = false;
+		int iterate = 0;
 		int countUp = 1;
 		while(!chosen) {
-			System.out.println(countUp + ". " + artistsSorted.get(countUp-1));
-			countUp ++;
-			if(countUp%25 == 0 || countUp > artistsSorted.size()) {
-				if(countUp >= artistsSorted.size()) {countUp = 1;}
+			if(artistsSorted.get(iterate).toLowerCase().contains(regex.toLowerCase())) {
+				System.out.println(countUp + ". " + artistsSorted.get(iterate));
+				alike.add(artistsSorted.get(iterate));
+				countUp ++;
+			}
+			iterate++;
+			
+			if(countUp%25 == 0 || iterate >= artistsSorted.size()) {
+				if(iterate >= artistsSorted.size()) {countUp = 1; iterate = 0;}
 				System.out.println("Hit ENTER for more or type ARTIST NUMBER to access artist. (or type 0 to return)");
 				String input = sc.nextLine();
 				if(input.compareTo("") != 0) {
-					MenuManager.parse(input);
-					chosen = true;
-				}
-			}
-		}
-		
-	}
+					if(input.compareTo("0")==0) {MenuManager.parse(input); chosen = true;} //this SHOULD send you back?????????? (it doesn't)
+					else {
+					try {
+						getArtist(Integer.parseInt(input),alike);
+						chosen = true;
+						}catch(NumberFormatException e) {
+						chosen = false;
+						System.out.println("Could not parse input.");
+						}
+					}
+	}}}}
 	
-	static void viewSongs() {
+	static void viewSongs(String regex) {
+		ArrayList<String> alike = new ArrayList<>();
 		boolean chosen = false;
 		int countUp = 1;
+		int iterate = 0;
 		while(!chosen) {
-			System.out.println(countUp + ". " + songsSorted.get(countUp-1));
-			countUp ++;
-			if(countUp%25 == 0 || countUp > songsSorted.size()) {
-				if(countUp >= songsSorted.size()) {countUp = 1;}
+			if(songsSorted.get(iterate).toLowerCase().contains(regex.toLowerCase())) { //gets each one that is (its not even really a regex lol (we c
+				System.out.println(countUp + ". " + songsSorted.get(iterate));
+				alike.add(songsSorted.get(iterate));
+				countUp ++;
+			}
+			iterate++;
+			if(countUp%25 == 0 || iterate >= songsSorted.size()) {
+				if(iterate >= songsSorted.size()) {countUp = 1; iterate = 0;}
 				System.out.println("Hit ENTER for more or type SONG NUMBER to access song. (or type 0 to return)");
 				String input = sc.nextLine();
 				if(input.compareTo("") != 0) {
-					MenuManager.parse(input);
-					chosen = true;
-				}
-			}
-		}
-		
+					if(input.compareTo("0")==0) {MenuManager.parse(input); chosen = true;} //this SHOULD send you back?????????? (it doesn't)
+					else {
+					try {
+						getSong(Integer.parseInt(input),alike);
+						chosen = true;
+						}catch(NumberFormatException e) {
+						chosen = false;
+						System.out.println("Could not parse input.");
+			}}}}}}
+
+
+static void getSong(int index, ArrayList<String> list) {
+	System.out.println("It is getting to getSong()"); //for debugging obv
+	Song song = null;
+	if(songsUnsorted.get(list.get(index-1)).size() == 1) {
+		song = songsUnsorted.get(list.get(index-1)).get(0);
+	} else {
+		// this else case shouldn't come up often
+		int countUp = 1;
+		boolean chosen = false;
+		while (!chosen){
+			for(Song songsSameName: songsUnsorted.get(list.get(index-1))) {
+				System.out.println(countUp + ". " + songsSameName);
+				countUp ++;
+				String input = sc.nextLine();
+				int inputNum;
+				try {
+					inputNum = Integer.parseInt(input);
+					if(inputNum <= songsUnsorted.get(list.get(index-1)).size()){
+						song = songsUnsorted.get(list.get(index-1)).get(inputNum-1);
+						chosen = true;
+					}else {System.out.println("Input out of range.");}
+				}catch(NumberFormatException e){
+					inputNum = 0;
+					System.out.println("Input not in valid format please input number of song you want to access.");
+				}}}}
+		// THIS SHOULD GET MADE INTO ITS OWN FUNCTION AND CHANGED
+		//ONCE WE GET THE MP3S PLAYING - Bella
+		boolean playing = true;
+		do {
+		System.out.println(song.getSongTitle());
+		String input = sc.nextLine();
+			playing = false;
+			MenuManager.parse("-1"); //will return to song menu
+		}while(playing);
 	}
 	
-	
-	static void getSong(int index) {
-		Song song = null;
-		if(songsUnsorted.get(songsSorted.get(index)).size() == 1) {
-			song = songsUnsorted.get(songsSorted.get(index)).get(0);
+	static void getAlbum(int index, ArrayList<String> list) {
+		Album album = null;
+		if(albumsUnsorted.get(list.get(index)).size() == 1) {
+			album = albumsUnsorted.get(list.get(index)).get(0);
 		} else {
 			// this else case shouldn't come up often
 			int countUp = 1;
 			boolean chosen = false;
 			while (!chosen){
-				for(Song songsSameName: songsUnsorted.get(songsSorted.get(index))) {
-					System.out.println(countUp + ". " + songsSameName);
+				for(Album albumsSameName: albumsUnsorted.get(list.get(index))) {
+					System.out.println(countUp + ". " + albumsSameName);
 					countUp ++;
 					String input = sc.nextLine();
 					int inputNum;
 					try {
 						inputNum = Integer.parseInt(input);
-						if(inputNum <= songsUnsorted.get(songsSorted.get(index)).size()){
-							song = songsUnsorted.get(songsSorted.get(index)).get(inputNum-1);
+						if(inputNum <= albumsUnsorted.get(list.get(index)).size()){
+							album = albumsUnsorted.get(list.get(index)).get(inputNum-1);
 							chosen = true;
 						}else {System.out.println("Input out of range.");}
 					}catch(NumberFormatException e){
-						inputNum = 0;
+						chosen = false;
 						System.out.println("Input not in valid format please input number of song you want to access.");
 					}
 				}
 			}
 		}
-		System.out.println(song.getSongTitle());
-	}
+			// THIS SHOULD GET MADE INTO ITS OWN FUNCTION AND CHANGED
+			//ONCE WE GET THE MP3S PLAYING - Bella
+			boolean playing = true;
+			do {
+			System.out.println(album.getAlbumTitle());
+			String input = sc.nextLine();
+			int inputNum;
+			try {
+				inputNum = Integer.parseInt(input);
+				playing = false;
+				MenuManager.parse("-1"); //will return to song menu
+			}catch(NumberFormatException e){
+				inputNum = 0;
+				System.out.println("Input not in valid format please input number of song you want to access.");
+			}}while(playing);
+		}
+		
+		static void getArtist(int index, ArrayList<String> list) {
+			Artist artist = null;
+			artist = artistsUnsorted.get(list.get(index));
+			
+			// THIS SHOULD GET MADE INTO ITS OWN FUNCTION AND CHANGED
+			//ONCE WE GET THE MP3S PLAYING - Bella
+			boolean playing = true;
+			do {
+			System.out.println(artist.getName());
+			String input = sc.nextLine();
+			int inputNum;								//this is actually going to just print out the names of the albums that they have
+			try {
+				inputNum = Integer.parseInt(input);
+				playing = false;
+				MenuManager.parse("-1"); //will return to song menu
+			}catch(NumberFormatException e){
+				inputNum = 0;
+				System.out.println("Input not in valid format please input number of song you want to access.");
+			}}while(playing);
+
+			}
 	
 	static void sortLists() {
-		songsSorted.sort(null);
+		songsSorted.sort(null); //sort songs
 		albumsSorted.sort(null);; //sort albums
 		artistsSorted.sort(null); //sort artists
 	}
