@@ -99,7 +99,44 @@ public class MusicLib {
 		}
 	}
 	
+	static void viewMedia(String search, MediaType type) {
+		if(type == MediaType.SONG) {viewThisMedia(search, songsSorted);}
+	}
 	
+	
+	static void viewThisMedia(String search, ArrayList<String> mediaSorted) {
+		ArrayList<String> alike = new ArrayList<>();
+		boolean chosen = false;
+		int iterate = 0;
+		int countUp = 1;
+		while(!chosen) {
+			if(mediaSorted.get(iterate).toLowerCase().contains(search.toLowerCase())) {
+				System.out.println(countUp + ". " + mediaSorted.get(iterate));
+				alike.add(mediaSorted.get(iterate));
+				countUp ++;
+			}
+			
+			iterate++;
+			
+			if(countUp%25 == 0 || iterate >= mediaSorted.size()) {
+				if(iterate >= mediaSorted.size()) {countUp = 1; iterate = 0;}
+				System.out.println("Hit ENTER for more, type number of media, or type 0 to return");
+				String input = sc.nextLine();
+				if(input.compareTo("") != 0) {
+					if(input.compareTo("0")==0) {MenuManager.parse(input); chosen = true;} //this SHOULD send you back?????????? (it doesn't)
+					else {
+					try {
+						getAlbum(Integer.parseInt(input),alike);
+						chosen = true;
+						}catch(NumberFormatException e) {
+						chosen = false;
+						System.out.println("Could not parse input.");
+			}
+		}
+					}
+				}
+			}
+		}
 	
 	static void viewAlbums(String regex) {
 		ArrayList<String> alike = new ArrayList<>();
