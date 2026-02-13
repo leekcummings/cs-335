@@ -124,7 +124,7 @@ public class MusicLib {
 			
 			//i think possibly this 25 number should be set able but prob won't matter once we have GUI
 			if(countUp%25 == 0 || iterate >= mediaSorted.size()) {
-				if(iterate >= mediaSorted.size()) {countUp = 1; iterate = 0;}
+				if(iterate >= mediaSorted.size()) {countUp = 1; iterate = 0; alike.removeAll(alike);}
 				System.out.println("Hit ENTER for more, type number of media, or type 0 to return");
 				String input = sc.nextLine();
 				if(input.compareTo("") != 0) { //simply reads out the next bunch

@@ -56,7 +56,7 @@ public class DirectoryScanner {
              			title = id3v1Tag.getTitle();
              		}
              		// adding to songs list
-             		if(title.equals(mediaName)) {
+             		if(title.equals(mediaName) && !media.contains(title)) {
              			media.add(file.getAbsolutePath());
              		}
 				}
@@ -77,7 +77,7 @@ public class DirectoryScanner {
              			album = id3v1Tag.getTitle();
              		}
              		// adding to songs list
-             		if(album.equals(mediaName)) {
+             		if(album.equals(mediaName)&& !media.contains(album)) {
              			media.add(file.getAbsolutePath());
              		}
 				} 
@@ -100,20 +100,17 @@ public class DirectoryScanner {
              			artist = id3v1Tag.getTitle();
 //             			album = id3v1Tag.getTitle();
              		}
-             		// adding to artist list | add some kind of way to tell if the album is already listed (or do this later)
-//             		boolean found = false;
-//             		int iterate = 0;
-//             		if(artist.equals(mediaName)) {
-//             			while(!found || iterate < media.size())
-//             			media.add(file.getAbsolutePath());
-//             		}
-				} 
+             		 //adding to artist list | add some kind of way to tell if the album is already listed (or do this later)
+             		if(artist.equals(mediaName) && !media.contains(artist)) {
+             			media.add(file.getAbsolutePath());
+             		}
 			}
 		}
 		if(media.isEmpty()) {
 			media.add("NOT_FOUND");
 		}
 		return(media);
+	}
 	}
 		
 	private

@@ -135,7 +135,7 @@ public class MenuManager {
 	
 	static void searchMenu() throws UnsupportedTagException, InvalidDataException, IOException {
 		System.out.println("1. Search by All Catagories"
-				+ "2. Search by Album" +
+				+ "\n2. Search by Album" +
 				"\n3. Search by Artist" +
 				"\n4. Search by Song Name" +
 				"\n5. Return to previous page");
