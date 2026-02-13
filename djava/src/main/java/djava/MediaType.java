@@ -1,5 +1,5 @@
 package djava;
 
 public enum MediaType {
-	SONG,ALBUM,ARTIST
+	SONG,ALBUM,ARTIST,ALL
 }
