@@ -130,7 +130,6 @@ public class MenuManager {
 	
 	static void browseArtists() {
 		currentMenu = Menu.ML_ARTISTS;
-		String input = sc.nextLine();
 		MusicLib.browseMedia(MediaType.ARTIST);
 	}
 	

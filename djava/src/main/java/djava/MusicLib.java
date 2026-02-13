@@ -40,6 +40,11 @@ public class MusicLib {
 			album = id3v1Tag.getAlbum();
 			artist = id3v1Tag.getArtist();
 		}
+		
+		if(title == null) {title = "Unknown";}
+		if(album == null) {album = "Unknown";}
+		if(artist == null) {artist = "Unknown";}
+		
 		// adding to songs list
 		if(!songsSorted.contains(title)) {
 			songsSorted.add(title);
@@ -59,13 +64,14 @@ public class MusicLib {
 	
 	//				BROWSING
 	static void browseMedia(MediaType type) {
+		System.out.println("browseMedia");
 		if(type == MediaType.SONG) {browseThisMedia(songsSorted, type);}
 		else if(type == MediaType.ALBUM) {browseThisMedia(albumsSorted, type);}
 		else {browseThisMedia(artistsSorted, type);}
 	}
 	
 	static void browseThisMedia(ArrayList<String> mediaSorted, MediaType type) {
-		ArrayList<String> alike = new ArrayList<>();
+		System.out.println("browseThisMedia");
 		boolean chosen = false;
 		int countUp = 1; //what number to display with
 		while(!chosen) { //printing out everything that matches
@@ -123,12 +129,12 @@ public class MusicLib {
 				String input = sc.nextLine();
 				if(input.compareTo("") != 0) { //simply reads out the next bunch
 					if(input.compareTo("0")==0) {
-					try {
-						MenuManager.parse(input);
-					} catch (UnsupportedTagException | InvalidDataException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} chosen = true;} //this SHOULD send you back?????????? (it doesn't)
+						try {
+							MenuManager.parse(input);
+						} catch (UnsupportedTagException | InvalidDataException | IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} chosen = true;} //this SHOULD send you back?????????? (it doesn't)
 					else {
 					try {
 						getMedia(alike.get(Integer.parseInt(input)), type); //if input wasn't a number it sends the loop back around again

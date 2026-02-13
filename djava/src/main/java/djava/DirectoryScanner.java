@@ -31,6 +31,7 @@ public class DirectoryScanner {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        MusicLib.sortLists();
 	}
 	
 	static ArrayList<String> searchDir(String mediaName, MediaType type) {
