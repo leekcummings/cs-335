@@ -148,24 +148,29 @@ public class MenuManager {
 		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.S_ALL;}
 		System.out.println("Search: ");
 		MusicLib.searchMedia(sc.next(), MediaType.ALL);
+		currentMenu = Menu.SEARCH;
 	}
 	
 	static void searchSongs() {
 		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.S_SONGS;}
 		System.out.println("Search: ");
 		MusicLib.searchMedia(sc.next(), MediaType.SONG);
+		currentMenu = Menu.SEARCH;
 	}
 	
 	static void searchAlbums() {
 		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.S_ALBUMS;}
 		System.out.println("Search: ");
 		MusicLib.searchMedia(sc.next(), MediaType.ALBUM);
+		currentMenu = Menu.SEARCH;
+		return;
 	}
 	
 	static void searchArtists() {
 		if(currentMenu != Menu.MUSIC_LIBRARY) {currentMenu = Menu.S_ARTISTS;}
 		System.out.println("Search: ");
 		MusicLib.searchMedia(sc.next(), MediaType.ARTIST);
+		currentMenu = Menu.SEARCH;
 	}
 	
 	static void options() throws UnsupportedTagException, InvalidDataException, IOException {
@@ -202,16 +207,16 @@ public class MenuManager {
 		musicLibrary();
 	}
 	
-	static void returnToSongsSearch() {
-		searchSongs();
+	static void returnToSongsSearch() throws UnsupportedTagException, InvalidDataException, IOException {
+		searchMenu();
 	}
 	
-	static void returnToAlbumsSearch() {
-		searchAlbums();
+	static void returnToAlbumsSearch() throws UnsupportedTagException, InvalidDataException, IOException {
+		searchMenu();
 	}
 	
-	static void returnToArtistsSearch() {
-		searchArtists();
+	static void returnToArtistsSearch() throws UnsupportedTagException, InvalidDataException, IOException {
+		searchMenu();
 	}
 	
 	static void returnToSongsBrowse() {

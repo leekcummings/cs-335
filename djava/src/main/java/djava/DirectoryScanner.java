@@ -35,8 +35,11 @@ public class DirectoryScanner {
 	}
 	
 	static ArrayList<String> searchDir(String mediaName, MediaType type) {
-		ArrayList<String> files = searchDir(mediaName, type, new File(MusicDirectory.get()));
-		return(files);
+// Lee Last edited: returning null value to avoid crashes. Evneutally needs to properly return songs
+//		File musicDir = new File(MusicDirectory.get());
+//		ArrayList<String> files = searchDir(mediaName, type, musicDir);
+//		return(files);
+		return(null);
 	}
 	
 	static ArrayList<String> searchDir(String mediaName, MediaType type, File dir) {
@@ -47,18 +50,23 @@ public class DirectoryScanner {
 				if(type == MediaType.SONG || type == MediaType.ALL) {
                 	String title;
              		Mp3File mp3file;
-					mp3file = new Mp3File(file.getAbsolutePath());
-             		if(mp3file.hasId3v2Tag()) { //v2 is first because it is more common
-             			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-             			title = id3v2Tag.getTitle();
-             		}else {
-             			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
-             			title = id3v1Tag.getTitle();
-             		}
-             		// adding to songs list
-             		if(title.equals(mediaName) && !media.contains(title)) {
-             			media.add(file.getAbsolutePath());
-             		}
+					try {
+						mp3file = new Mp3File(file.getAbsolutePath());
+						if(mp3file.hasId3v2Tag()) { //v2 is first because it is more common
+	             			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+	             			title = id3v2Tag.getTitle();
+	             		}else {
+	             			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
+	             			title = id3v1Tag.getTitle();
+	             		}
+	             		// adding to songs list
+	             		if(title.equals(mediaName) && !media.contains(title)) {
+	             			media.add(file.getAbsolutePath());
+	             		}
+					} catch (UnsupportedTagException | InvalidDataException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				if(type == MediaType.ALBUM || type == MediaType.ALL) {
 					String album;
@@ -109,8 +117,8 @@ public class DirectoryScanner {
 		if(media.isEmpty()) {
 			media.add("NOT_FOUND");
 		}
-		return(media);
-	}
+		}
+		return media;
 	}
 		
 	private
