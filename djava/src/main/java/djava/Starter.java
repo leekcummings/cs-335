@@ -1,8 +1,17 @@
 package djava;
 
-public class Starter {
+import java.io.IOException;
 
-        public static void main(final String[] args) {
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.UnsupportedTagException;
+
+public class Starter {
+        public static void main(final String[] args) throws UnsupportedTagException, InvalidDataException, IOException {
+        	// Taken from original Driver file
+        	ConfigManager cm = new ConfigManager(); //this runs the config manager
+        	MusicDirectory.setDefaultDirectory();
+    		DirectoryScanner.readDirectory();
+    		
             System.out.println("main");
             Javafx.main(args);
         }
