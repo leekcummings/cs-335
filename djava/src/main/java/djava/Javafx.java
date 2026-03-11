@@ -1,15 +1,19 @@
+// DO NOT RUN THIS FILE, RUN Starter.java TO LAUNCH GUI
+
 package djava;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Javafx extends Application {
@@ -20,12 +24,23 @@ public class Javafx extends Application {
 
     @Override
     public void start(Stage stage) {
-    	VBox mainWindow = new VBox(); // All modules will be appended to this mainWindow
+    	StackPane mainWindow = new StackPane(); // All modules will be appended to this mainWindow
+    	
+    	// TOP BAR ITEMS (DOESN'T INCLUDE TABS FOR MUSIC)
+    	HBox topBar = new HBox();
+    	topBar.setMaxWidth(400);
+    	topBar.setPrefWidth(Double.MAX_VALUE);
     	
     	// Search bar (Doesn't work right now)
-    	TextField searchBar = new TextField();
+    	TextField searchBar = new TextField();    	
         searchBar.setPromptText("Search {CATEGORY}");
         
+        // Buttons for help, settings, etc.
+        Button helpButton = new Button("Help");
+        Button settingsButton = new Button("Settings");
+        
+        topBar.getChildren().addAll(searchBar, helpButton, settingsButton);
+
         // Tabs for different categories of music
         TabPane tabPane = new TabPane();
         
@@ -51,13 +66,14 @@ public class Javafx extends Application {
     	// Add all created Tabs to TabPane
         tabPane.getTabs().addAll(tab1, tab2, tab3, tab4);
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); // Prevent user from closing tabs
-        VBox.setVgrow(tabPane, Priority.ALWAYS); // Allows tab pane to extend to bottom of screen
         
         // Add all elements to main window
-    	mainWindow.getChildren().addAll(searchBar, tabPane);
-
+    	mainWindow.getChildren().addAll(tabPane, topBar);        
+//        VBox.setVgrow(tabPane, Priority.ALWAYS); // Allows tab pane to extend to bottom of screen
+        StackPane.setAlignment(topBar, Pos.TOP_RIGHT); // Push search/buttons to the right
+        
         Scene scene = new Scene(mainWindow, 800, 600);
-
+        
         stage.setTitle("DJava Application (TEST)");
         stage.setScene(scene);
         stage.show();
