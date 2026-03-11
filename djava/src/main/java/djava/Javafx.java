@@ -28,7 +28,8 @@ public class Javafx extends Application {
     	
     	// TOP BAR ITEMS (DOESN'T INCLUDE TABS FOR MUSIC)
     	HBox topBar = new HBox();
-    	topBar.setMaxWidth(400);
+    	int topBarWidth = 400;
+    	topBar.setMaxWidth(topBarWidth);
     	topBar.setPrefWidth(Double.MAX_VALUE);
     	
     	// Search bar (Doesn't work right now)
@@ -62,9 +63,14 @@ public class Javafx extends Application {
     	
     	Tab tab4 = new Tab("Playlist");
         tab4.setContent(new Label("But there was nothing here..."));
+        
+        Tab tab5 = new Tab("All Categories");
+        ListView<String> all = new ListView<>();
+    	all.getItems().addAll(MusicLib.allSorted);
+        tab5.setContent(all);
     	
     	// Add all created Tabs to TabPane
-        tabPane.getTabs().addAll(tab1, tab2, tab3, tab4);
+        tabPane.getTabs().addAll(tab1, tab2, tab3, tab4, tab5);
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); // Prevent user from closing tabs
         
         // Add all elements to main window
@@ -77,5 +83,8 @@ public class Javafx extends Application {
         stage.setTitle("DJava Application (TEST)");
         stage.setScene(scene);
         stage.show();
+        
+        searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
+
     }
 }

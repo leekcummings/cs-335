@@ -53,12 +53,12 @@ public class MusicLib {
 		//adding to albums list
 		if(!albumsSorted.contains(album)) {
 			albumsSorted.add(album);
-			allSorted.add(title);
+			allSorted.add(album);
 		}
 		//adding to artists list
 		if(!artistsSorted.contains(artist)) {
 			artistsSorted.add(artist);
-			allSorted.add(title);
+			allSorted.add(artist);
 		}
 	}
 	
