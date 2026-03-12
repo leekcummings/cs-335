@@ -10,7 +10,7 @@ public class Starter {
         	// Taken from original Driver file
         	ConfigManager cm = new ConfigManager(); //this runs the config manager
         	MusicDirectory.setDefaultDirectory();
-    		DirectoryScanner.readDirectory();
+    		MusicLib.loadLibrary();
     		
             System.out.println("main");
             Javafx.main(args);

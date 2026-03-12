@@ -1,11 +1,9 @@
+
 package djava;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
 
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
@@ -14,159 +12,100 @@ import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 public class MusicLib {
-	static ArrayList<String> songsSorted = new ArrayList<>();
-	static ArrayList<String> albumsSorted = new ArrayList<>();
-	static ArrayList<String> artistsSorted = new ArrayList<>();
-	static ArrayList<String> allSorted = new ArrayList<>();
-	//these arraylists will be scanned in from json at start
+	private 
+	//files in an arraylist that contains each mp3 file in the directory
+	static ArrayList<String> files = new ArrayList<>();
 	
-	static Scanner sc = new Scanner(System.in);
-	MenuManager mm = new MenuManager();
+	static void directoryScan(File dir){
+		//this function steps through the directory and adds them to a list
+		for (File file : dir.listFiles()) { //iterating through each file
+			if(file.isDirectory()) {directoryScan(file);}
+			else {
+				if(file.getAbsolutePath().matches(".*mp3")) { //this is just to make sure that we are only
+					files.add(file.getAbsolutePath());		  //adding mp3s to the list, to get rid of unnecessary
+				}											  //headaches (again can be changed for flacs later)
+			}
+		}
+	}
+	
+	//https://javarevisited.blogspot.com/2023/09/how-to-sort-arraylist-in-java-without.html
+	//I used this as a base but then changed it a lot so that it would work with our type of data
+	static void quickSort(int low, int high) {
+        if (low < high) {
+        	// Partition the list into two sublists
+	        int pivotIndex = partition(low, high);
+	
+	        // Recursively sort each sublist
+	        quickSort(low, pivotIndex - 1);
+	        quickSort(pivotIndex + 1, high);
+        }
+    }
+
+	static int partition(int low, int high) {
+		String[] highData = getMetadata(files.get(high)); //high is the pivot
+        int i = low - 1;
+        String[] jData = getMetadata(files.get(low));
+        for (int j = low; jData[0].compareToIgnoreCase(highData[0]) < 0; j++) {
+        	jData = getMetadata(files.get(j));
+            if (jData[0].compareToIgnoreCase(highData[0]) < 0) {
+                i++;
+                // Swap elements at i and j
+                String temp = files.get(i);
+                files.set(i, files.get(j));
+                files.set(j, temp);
+            }
+        }
+        // Swap the pivot element with the element at (i + 1)
+        String temp = files.get(i+1);
+        files.set(i + 1, files.get(high));
+        files.set(high, temp);
+        return i + 1;
+    }
 	
 	public
-	static void addToIndex(Path file) throws UnsupportedTagException, InvalidDataException, IOException {
-		String title;
-		String album;
-		String artist;
-		Mp3File mp3file = new Mp3File(file);
-		if(mp3file.hasId3v2Tag()) { //v2 is first because it is more common
-			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-			title = id3v2Tag.getTitle();
-			album = id3v2Tag.getAlbum();
-			artist = id3v2Tag.getArtist();
-		}else {
-			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
-			title = id3v1Tag.getTitle();
-			album = id3v1Tag.getAlbum();
-			artist = id3v1Tag.getArtist();
-		}
-		
-		if(title == null) {title = "Unknown";}
-		if(album == null) {album = "Unknown";}
-		if(artist == null) {artist = "Unknown";}
-		
-		// adding to songs list
-		if(!songsSorted.contains(title)) {
-			songsSorted.add(title);
-			allSorted.add(title);
-		}
-		//adding to albums list
-		if(!albumsSorted.contains(album)) {
-			albumsSorted.add(album);
-			allSorted.add(album);
-		}
-		//adding to artists list
-		if(!artistsSorted.contains(artist)) {
-			artistsSorted.add(artist);
-			allSorted.add(artist);
-		}
+	static ArrayList<String> getFiles(){return files;}
+	static void loadLibrary(){
+		//this function recurses through the specified directory and adds all mp3 file paths to a list 
+		//in the future this can also be flacs but for now it is ONLY mp3s
+		directoryScan(new File(MusicDirectory.get()));
+		System.out.println(files);
+		//commenting this out for the time being because I simply don't want to do it right now
+//		quickSort(0,files.size()-1);
+//		for(String file: files) {
+//			String[] fileData = getMetadata(file);
+//			System.out.println(fileData[0]);
+//		}
 	}
 	
-	//				BROWSING
-	static void browseMedia(MediaType type) {
-		System.out.println("browseMedia");
-		if(type == MediaType.SONG) {browseThisMedia(songsSorted, type);}
-		else if(type == MediaType.ALBUM) {browseThisMedia(albumsSorted, type);}
-		else {browseThisMedia(artistsSorted, type);}
-	}
-	
-	static void browseThisMedia(ArrayList<String> mediaSorted, MediaType type) {
-		System.out.println("browseThisMedia");
-		boolean chosen = false;
-		int countUp = 1; //what number to display with
-		while(!chosen) { //printing out everything that matches
-			System.out.println(countUp + ". " + mediaSorted.get(countUp-1));
-			countUp ++; //for counting up selected songs
-		
-			//i think possibly this 25 number should be set able but prob won't matter once we have GUI
-			if(countUp%25 == 0 || countUp >= mediaSorted.size()) {
-				if(countUp >= mediaSorted.size()) {countUp = 1;}
-				System.out.println("Hit ENTER for more, type number of media, or type 0 to return");
-				String input = sc.nextLine();
-				if(!input.equals("")) {
-					try {
-						MenuManager.parse(input);
-					} catch (UnsupportedTagException | InvalidDataException | IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					chosen = true;
-				}
-				
-				
-			}
-		}
-	}
-	
-	//				SEARCHING
-	static void searchMedia(String search, MediaType type) {
-		if(type == MediaType.SONG) {searchThisMedia(search, songsSorted, type);}
-		else if(type == MediaType.ALBUM) {searchThisMedia(search, albumsSorted, type);}
-		else if(type == MediaType.ARTIST) {searchThisMedia(search, artistsSorted, type);}
-		else {searchThisMedia(search, allSorted, type);}
-	}
-	
-	static void searchThisMedia(String search, ArrayList<String> mediaSorted, MediaType type) {
-		ArrayList<String> alike = new ArrayList<>();
-		boolean chosen = false;
-		int iterate = 0; //counting where we are in the list
-		int countUp = 1; //what number to display with
-		while(!chosen) { //printing out everything that matches
-			if(mediaSorted.get(iterate) == null) {
-				//do nothing lol
-			}
-			else if(mediaSorted.get(iterate).toLowerCase().contains(search.toLowerCase())) {
-				System.out.println(countUp + ". " + mediaSorted.get(iterate));
-				alike.add(mediaSorted.get(iterate));
-				countUp ++; //for counting up selected songs
-			}
-			iterate++; //loop break condition
-			
-			//i think possibly this 25 number should be set able but prob won't matter once we have GUI
-			if(countUp%25 == 0 || iterate >= mediaSorted.size()) {
-				if(iterate >= mediaSorted.size()) {countUp = 1; iterate = 0;}
-				System.out.println("Hit ENTER for more, type number of media, or type 0 to return");
-				String input = sc.nextLine();
-				if(input.compareTo("") != 0) { //simply reads out the next bunch
-					if(input.compareTo("0")==0) {
-						try {
-							MenuManager.parse(input);
-						} catch (UnsupportedTagException | InvalidDataException | IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} chosen = true;} //this SHOULD send you back?????????? (it doesn't)
-					else {
-					try {
-						getMedia(alike.get(Integer.parseInt(input)), type); //if input wasn't a number it sends the loop back around again
-						chosen = true;
-						}catch(NumberFormatException e) {
-						chosen = false;
-						System.out.println("Could not parse input '" + input + "'.");
-						}
-					}
-					}
-			}
-		}
-	}
-	
-	static void getMedia(String mediaName, MediaType type) {
-		System.out.println(DirectoryScanner.searchDir(mediaName, type));
+	static String[] getMetadata(String fileLocation) {
+		//this function gets the set of title album and artist metadata and returns it as an array
+							// Title,     Album,    Artist
+		String[] metadata = {"Unknown", "Unknown", "Unknown"};
+		Mp3File mp3file;
+		//checking for which type of id3 data and grabbing the title accordingly
 		try {
-			MenuManager.parse(sc.nextLine());
+			//tries to make an mp3 file, checks what type it is and gets the title accordingly
+			mp3file = new Mp3File(fileLocation);
+			if(mp3file.hasId3v2Tag()) { //v2 is first because it is more common
+	 			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+	 			metadata[0] = id3v2Tag.getTitle();
+	 			metadata[1] = id3v2Tag.getAlbum();
+	 			metadata[2] = id3v2Tag.getArtist();
+	 		}else {
+	 			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
+	 			metadata[0] = id3v1Tag.getTitle();
+	 			metadata[1] = id3v1Tag.getAlbum();
+	 			metadata[2] = id3v1Tag.getArtist();
+	 		}
+			//this for loop is to insure that we don't get any null values and its easier to check
+			//here at the end then every time we are getting each metadata
+			//this for loop can be debated if you want
+			for(int i = 0; i < 3; i++) {if(metadata[i] == null) {metadata[i] = "Unknown";}}
 		} catch (UnsupportedTagException | InvalidDataException | IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			//e.printStackTrace();
+			System.out.println("File not found.");
+		}						
+		return metadata;
 	}
-	
-	static void sortLists() {
-		songsSorted.sort(null); //sort songs
-		albumsSorted.sort(null);; //sort albums
-		artistsSorted.sort(null); //sort artists
-	}
-	
-//	ArrayList<String> searchLib(MediaType type, Media media) {
-//		ArrayList<String> results = new ArrayList<>();
-//		return(results);
-//	}	
 }
