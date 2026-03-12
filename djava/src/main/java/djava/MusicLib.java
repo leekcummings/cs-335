@@ -18,12 +18,15 @@ public class MusicLib {
 	
 	static void directoryScan(File dir){
 		//this function steps through the directory and adds them to a list
-		for (File file : dir.listFiles()) { //iterating through each file
-			if(file.isDirectory()) {directoryScan(file);}
-			else {
-				if(file.getAbsolutePath().matches(".*mp3")) { //this is just to make sure that we are only
-					files.add(file.getAbsolutePath());		  //adding mp3s to the list, to get rid of unnecessary
-				}											  //headaches (again can be changed for flacs later)
+		if(dir.listFiles() == null) {System.out.println("Directory:" + dir.getAbsolutePath() + "is null");}
+		else {
+			for (File file : dir.listFiles()) { //iterating through each file
+				if(file.isDirectory()) {directoryScan(file);}
+				else {
+					if(file.getAbsolutePath().matches(".*mp3")) { //this is just to make sure that we are only
+						files.add(file.getAbsolutePath());		  //adding mp3s to the list, to get rid of unnecessary
+					}											  //headaches (again can be changed for flacs later)
+				}
 			}
 		}
 	}
@@ -42,12 +45,12 @@ public class MusicLib {
     }
 
 	static int partition(int low, int high) {
-		String[] highData = getMetadata(files.get(high)); //high is the pivot
+		String highData = getSongData(files.get(high)); //high is the pivot
         int i = low - 1;
-        String[] jData = getMetadata(files.get(low));
-        for (int j = low; jData[0].compareToIgnoreCase(highData[0]) < 0; j++) {
-        	jData = getMetadata(files.get(j));
-            if (jData[0].compareToIgnoreCase(highData[0]) < 0) {
+        String jData = getSongData(files.get(low));
+        for (int j = low; j < high; j++) {
+        	jData = getSongData(files.get(j));
+            if (jData.compareToIgnoreCase(highData) < 0) {
                 i++;
                 // Swap elements at i and j
                 String temp = files.get(i);
@@ -55,11 +58,35 @@ public class MusicLib {
                 files.set(j, temp);
             }
         }
-        // Swap the pivot element with the element at (i + 1)
-        String temp = files.get(i+1);
-        files.set(i + 1, files.get(high));
-        files.set(high, temp);
-        return i + 1;
+	      //Swap the pivot element with the element at (i + 1)
+	      String temp = files.get(i+1);
+	      files.set(i + 1, files.get(high));
+	      files.set(high, temp);
+	      return i + 1;
+//        // Swap the pivot element with the element at (i + 1)
+//        String temp = files.get(i+1);
+//        files.set(i + 1, files.get(high));
+//        files.set(high, temp);
+//        return i + 1;
+//        
+//        String[] highData = getMetadata(files.get(high)); //high is the pivot
+//        int i = low - 1;
+//        String[] jData = getMetadata(files.get(low));
+//        for (int j = low; j < high; j++) {
+//        	jData = getMetadata(files.get(j));
+//            if (jData[0].compareToIgnoreCase(highData[0]) < 0) {
+//                i++;
+//                // Swap elements at i and j
+//                String temp = files.get(i);
+//                files.set(i, files.get(j));
+//                files.set(j, temp);
+//            }
+//        }
+//        // Swap the pivot element with the element at (i + 1)
+//        String temp = files.get(i+1);
+//        files.set(i + 1, files.get(high));
+//        files.set(high, temp);
+//        return i + 1;
     }
 	
 	public
@@ -70,11 +97,11 @@ public class MusicLib {
 		directoryScan(new File(MusicDirectory.get()));
 		System.out.println(files);
 		//commenting this out for the time being because I simply don't want to do it right now
-//		quickSort(0,files.size()-1);
-//		for(String file: files) {
-//			String[] fileData = getMetadata(file);
-//			System.out.println(fileData[0]);
-//		}
+		quickSort(0,files.size()-1);
+		for(String file: files) {
+			String[] fileData = getMetadata(file);
+			System.out.println(fileData[0]);
+		}
 	}
 	
 	static String[] getMetadata(String fileLocation) {
@@ -107,5 +134,42 @@ public class MusicLib {
 			System.out.println("File not found.");
 		}						
 		return metadata;
+	}
+	
+	static ArrayList<String[]> getSongs(){
+		ArrayList<String[]> songData = new ArrayList<>();
+		for(String file: files) {
+			songData.add(getMetadata(file));
+		}
+		return songData;
+	}
+	
+	static String getSongData(String fileLocation) {
+		//this function gets the set of title album and artist metadata and returns it as an array
+							// Title,     Album,    Artist
+		String songData;
+		Mp3File mp3file;
+		//checking for which type of id3 data and grabbing the title accordingly
+		try {
+			//tries to make an mp3 file, checks what type it is and gets the title accordingly
+			mp3file = new Mp3File(fileLocation);
+			if(mp3file.hasId3v2Tag()) { //v2 is first because it is more common
+	 			ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+	 			songData = id3v2Tag.getTitle();
+	 		}else {
+	 			ID3v1 id3v1Tag = mp3file.getId3v1Tag();
+	 			songData = id3v1Tag.getTitle();
+	 		}
+			//this for loop is to insure that we don't get any null values and its easier to check
+			//here at the end then every time we are getting each metadata
+			//this for loop can be debated if you want
+			if(songData == null) {return("Unknown");}
+		} catch (UnsupportedTagException | InvalidDataException | IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			System.out.println("File unable to be parsed: " + fileLocation);
+			return("Unknown");
+		}						
+		return songData;
 	}
 }
