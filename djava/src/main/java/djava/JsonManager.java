@@ -40,24 +40,31 @@ public class JsonManager {
 								 "albumTitle", album,
 								 "artistName", artist,
 								 "filePath", filePath));
-		
 	}
 	
 	static void writeToJson() {
-		FileWriter file; //will write the information to the json file
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonObject = objectMapper.convertValue(songMap, JsonNode.class);
 		try {
 			String jsonString = objectMapper.writeValueAsString(jsonObject);
 			System.out.println("JSON String: " + jsonString);
+			try {
+				FileWriter file = new FileWriter("musicData.json", false);
+				file.write(jsonString);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("ERROR: Was not able to write to file");
+			} //will write the information to the json file
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println("ERROR: Was not able to write string from map");
 		}
+		//for now just printing it out
 		System.out.println("JSON Object (JsonNode): " + jsonObject);  
-	      
 		//then write the string to a file
+		
 		
 	}
 }
