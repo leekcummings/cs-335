@@ -5,6 +5,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.flac.FlacTag;
+
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
@@ -36,85 +47,58 @@ public class MusicLib {
 		}
 	}
 	
-	//https://javarevisited.blogspot.com/2023/09/how-to-sort-arraylist-in-java-without.html
-	//I used this as a base but then changed it a lot so that it would work with our type of data
-//	static void quickSort(int low, int high) {
-//        if (low < high) {
-//        	// Partition the list into two sublists
-//	        int pivotIndex = partition(low, high);
-//	
-//	        // Recursively sort each sublist
-//	        quickSort(low, pivotIndex - 1);
-//	        quickSort(pivotIndex + 1, high);
-//        }
-//    }
-//
-//	static int partition(int low, int high) {
-//		String highData = getSongData(files.get(high)); //high is the pivot
-//        int i = low - 1;
-//        String jData = getSongData(files.get(low));
-//        for (int j = low; j < high; j++) {
-//        	jData = getSongData(files.get(j));
-//            if (jData.compareToIgnoreCase(highData) < 0) {
-//                i++;
-//                // Swap elements at i and j
-//                String temp = files.get(i);
-//                files.set(i, files.get(j));
-//                files.set(j, temp);
-//            }
-//        }
-//	      //Swap the pivot element with the element at (i + 1)
-//	      String temp = files.get(i+1);
-//	      files.set(i + 1, files.get(high));
-//	      files.set(high, temp);
-//	      return i + 1;
-//        // Swap the pivot element with the element at (i + 1)
-//        String temp = files.get(i+1);
-//        files.set(i + 1, files.get(high));
-//        files.set(high, temp);
-//        return i + 1;
-//        
-//        String[] highData = getMetadata(files.get(high)); //high is the pivot
-//        int i = low - 1;
-//        String[] jData = getMetadata(files.get(low));
-//        for (int j = low; j < high; j++) {
-//        	jData = getMetadata(files.get(j));
-//            if (jData[0].compareToIgnoreCase(highData[0]) < 0) {
-//                i++;
-//                // Swap elements at i and j
-//                String temp = files.get(i);
-//                files.set(i, files.get(j));
-//                files.set(j, temp);
-//            }
-//        }
-//        // Swap the pivot element with the element at (i + 1)
-//        String temp = files.get(i+1);
-//        files.set(i + 1, files.get(high));
-//        files.set(high, temp);
-//        return i + 1;
-    }
-	
 	public
 //	static ArrayList<String> getFiles(){return files;}
 	static void loadLibrary(){
 		//this function recurses through the specified directory and adds all mp3 file paths to a list 
 		//in the future this can also be flacs but for now it is ONLY mp3s
+//		if(!new File(filepath).exists()) {
+//			//if the json file doesn't exist then we make it here\
+//			//making it here bc its use is with this class specifically
+//			JsonManager.makeJson();
+//		}
+		JsonManager.makeMap();
 		directoryScan(new File(MusicDirectory.get()));
 		JsonManager.writeToJson();
-//		System.out.println(files);
-//		//commenting this out for the time being because I simply don't want to do it right now
-//		quickSort(0,files.size()-1);
 	}
 	
+	//these two parsers might be able to be the same but I am unsure its a bit confusing
 	static void mp3ToJson(File file) {
-		JsonManager.newMapElement(song,album,artist,filepath);
+		AudioFile m;
+		try {
+			m = AudioFileIO.read(file);
+			Tag tag = m.getTag();
+			String song = tag.getFirst(FieldKey.TITLE);
+			String album = tag.getFirst(FieldKey.ALBUM);
+			String artist = tag.getFirst(FieldKey.ARTIST);
+			String filePath = file.getAbsolutePath();
+			JsonManager.newMapElement(song,album,artist,filePath);
+		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
+				| InvalidAudioFrameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	static void flacToJson(File file) {
-		JsonManager.newMapElement(song,album,artist,filepath);
-		
+		AudioFile f;
+		try {
+			f = AudioFileIO.read(file);
+			FlacTag tag = (FlacTag) f.getTag();
+			String song = tag.getFirst(FieldKey.TITLE);
+			String album = tag.getFirst(FieldKey.ALBUM);
+			String artist = tag.getFirst(FieldKey.ARTIST);
+			String filePath = file.getAbsolutePath();
+			JsonManager.newMapElement(song,album,artist,filePath);
+		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
+				| InvalidAudioFrameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("ERROR: Unable to parse file");
+		}	
 	}
 	
+// 					THIS IS ALL OLD STUFF!!!!!!!!! WILL BE DELETED ONCE IK WE DON'T NEED IT
 //	static String[] getMetadata(String fileLocation) {
 //		//this function gets the set of title album and artist metadata and returns it as an array
 //							// Title,     Album,    Artist
@@ -181,4 +165,61 @@ public class MusicLib {
 //		}						
 //		return songData;
 //	}
+	//https://javarevisited.blogspot.com/2023/09/how-to-sort-arraylist-in-java-without.html
+	//I used this as a base but then changed it a lot so that it would work with our type of data
+//	static void quickSort(int low, int high) {
+//        if (low < high) {
+//        	// Partition the list into two sublists
+//	        int pivotIndex = partition(low, high);
+//	
+//	        // Recursively sort each sublist
+//	        quickSort(low, pivotIndex - 1);
+//	        quickSort(pivotIndex + 1, high);
+//        }
+//    }
+//
+//	static int partition(int low, int high) {
+//		String highData = getSongData(files.get(high)); //high is the pivot
+//        int i = low - 1;
+//        String jData = getSongData(files.get(low));
+//        for (int j = low; j < high; j++) {
+//        	jData = getSongData(files.get(j));
+//            if (jData.compareToIgnoreCase(highData) < 0) {
+//                i++;
+//                // Swap elements at i and j
+//                String temp = files.get(i);
+//                files.set(i, files.get(j));
+//                files.set(j, temp);
+//            }
+//        }
+//	      //Swap the pivot element with the element at (i + 1)
+//	      String temp = files.get(i+1);
+//	      files.set(i + 1, files.get(high));
+//	      files.set(high, temp);
+//	      return i + 1;
+//        // Swap the pivot element with the element at (i + 1)
+//        String temp = files.get(i+1);
+//        files.set(i + 1, files.get(high));
+//        files.set(high, temp);
+//        return i + 1;
+//        
+//        String[] highData = getMetadata(files.get(high)); //high is the pivot
+//        int i = low - 1;
+//        String[] jData = getMetadata(files.get(low));
+//        for (int j = low; j < high; j++) {
+//        	jData = getMetadata(files.get(j));
+//            if (jData[0].compareToIgnoreCase(highData[0]) < 0) {
+//                i++;
+//                // Swap elements at i and j
+//                String temp = files.get(i);
+//                files.set(i, files.get(j));
+//                files.set(j, temp);
+//            }
+//        }
+//        // Swap the pivot element with the element at (i + 1)
+//        String temp = files.get(i+1);
+//        files.set(i + 1, files.get(high));
+//        files.set(high, temp);
+//        return i + 1;
 }
+
