@@ -136,17 +136,15 @@ public class MusicLib {
 		return metadata;
 	}
 	
-	static ArrayList<String[]> getSongs(){
-		ArrayList<String[]> songData = new ArrayList<>();
+	static ArrayList<String> getSongs(){
+		ArrayList<String> songData = new ArrayList<>();
 		for(String file: files) {
-			songData.add(getMetadata(file));
+			songData.add(getSongData(file));
 		}
 		return songData;
 	}
 	
 	static String getSongData(String fileLocation) {
-		//this function gets the set of title album and artist metadata and returns it as an array
-							// Title,     Album,    Artist
 		String songData;
 		Mp3File mp3file;
 		//checking for which type of id3 data and grabbing the title accordingly

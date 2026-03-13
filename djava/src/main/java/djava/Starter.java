@@ -11,6 +11,7 @@ public class Starter {
         	ConfigManager cm = new ConfigManager(); //this runs the config manager
         	MusicDirectory.setDefaultDirectory();
     		MusicLib.loadLibrary();
+    		JsonManager.makeJson();
     		
             System.out.println("main");
             Javafx.main(args);

@@ -57,7 +57,7 @@ public class Javafx extends Application {
         // Create all tabs and add to tabPane
     	tabPane.getTabs().add(createTab("Artist", new ArrayList<String>()));
     	tabPane.getTabs().add(createTab("Album", new ArrayList<String>()));
-    	tabPane.getTabs().add(createTab("Song Title", MusicLib.getFiles()));
+    	tabPane.getTabs().add(createTab("Song Title", MusicLib.getSongs()));
     	tabPane.getTabs().add(createTab("All Categories", new ArrayList<String>()));
     	tabPane.getTabs().add(createTab("Playlist", new ArrayList<String>()));
 
