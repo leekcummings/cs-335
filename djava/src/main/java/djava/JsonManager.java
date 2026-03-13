@@ -22,7 +22,7 @@ public class JsonManager {
 		FileWriter file;
 		//will write the information to the json file
 		try {
-			file = new FileWriter("musicData.json", false);
+			file = new FileWriter("musicData.json");
 			file.write(json.toJSONString());
 			file.close();
 			System.out.println("file has been created");
