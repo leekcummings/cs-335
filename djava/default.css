@@ -1,0 +1,46 @@
+* {
+	-fx-border-width: 1;
+	-fx-border-color: transparent;
+}
+
+/* Blue shiny buttons */
+.button, .cell:selected, .cell:hover {
+	-fx-background-color: linear-gradient(to top,#9ad1fc 0,#83c6f3 10%,#128ddf 50%,#0f75b9 50%,#137bc0 70%,#5bade4 100%);
+	-fx-text-fill: white;
+	-fx-border-color: #4da1da, #4da1da, #0a84d6, #4da1da;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 1, 0, 0, 2);
+	-fx-font-weight: bold;
+}
+
+.topbar {
+	-fx-spacing: 15;
+}
+
+.text-field {
+	-fx-background-color: linear-gradient(to top,rgba(204, 204, 204, 1) 26%, rgba(232, 232, 232, 1) 48%, rgba(255, 255, 255, 1) 100%);
+	-fx-border-color: #bbb #bbb #aaa #bbb;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 1, 0, 0, 2);
+}
+.text-field * {
+	-fx-effect: none;
+}
+
+.cell {
+	-fx-cell-size: 30;
+	-fx-background-color: #ffffff;
+	-fx-border-color: transparent #bbb #aaa #bbb;
+}
+
+/* Alternating cell colors on ListView */
+.cell:even {
+	-fx-background-color: #f0f0f0;
+}
+
+.cell:hover {
+	-fx-background-color: linear-gradient(to top,rgba(79, 163, 219, 1) 60%, rgba(189, 240, 242, 1) 100%);
+}
+
+.button, .text-field {
+	-fx-background-radius: 10px;
+	-fx-border-radius: 10px;
+}

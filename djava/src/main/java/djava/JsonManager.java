@@ -3,10 +3,18 @@ package djava;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,12 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //https://www.youtube.com/watch?v=s6QtjCKq_wA
 public class JsonManager {
 	
-	static File json;
+	//static File json;
 	static Map<String, Object> songMap;
 	
 	//this should only be called when the json doesn't exist
 	//(alt. we can add an if else here to check if it exists)
-	static void makeJson() {json = new File("path to where we want the json tbd");}
+	//static void makeJson() {json = new File("path to where we want the json tbd");}
 	
 	//making a map, we only want one of these, it will get populated and then
 	//it will, as one object, be written to the json file
@@ -42,6 +50,50 @@ public class JsonManager {
 								 "artistName", artist,
 								 "filePath", filePath));
 	}
+	
+	static Map<String, Object> readFromJson() {
+		//i am profoundly lost right now
+//		ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode jsonNode = objectMapper.readTree(new File("media.json"));
+        
+		ObjectMapper objectMapper = new ObjectMapper();
+		File file = new File("media.json");
+		String abPath = file.getAbsolutePath();
+		Path filePath = Path.of(abPath);
+		String json = null;
+		try {
+			json = Files.readString(filePath);
+			System.out.println(json);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(json);
+		Map<String, Object> map = null;
+		try {
+			map = objectMapper.readValue(json, new TypeReference<Map<String,Object>>(){});
+		} catch (StreamReadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DatabindException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return(map);
+	}
+	
+	static ArrayList<String> allSongsFromJson() {
+		ArrayList<String> songs = new ArrayList<>();
+		Map<String, Object> map = readFromJson();
+		Set<String> keys = map.keySet();
+		System.out.println(map.keySet());
+		return songs;
+	}
+		
+		
 	
 	static void writeToJson() {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -66,8 +118,6 @@ public class JsonManager {
 		//for now just printing it out
 		System.out.println("JSON Object (JsonNode): " + jsonObject);  
 		//then write the string to a file
-		
-		
 	}
 	
 	//this function checks if the json directory already exists, if it doesn't
