@@ -82,7 +82,7 @@ public class Javafx extends Application {
     	playBar.autosize();
     	Button playButton = new Button("Play");
     	Button pauseButton = new Button("Pause");
-        String path = "C:\\Users\\bella\\Music\\Music\\DragonForce\\Reaching Into Infinity\\03 Judgement Day.mp3";
+        String path = "660452__seth_makes_sounds__free-commercial-song.wav";
         Media media = new Media(new File(path).toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(true);
