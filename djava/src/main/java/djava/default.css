@@ -4,7 +4,8 @@
 }
 
 /* Blue shiny buttons */
-.button, .cell:selected, .cell:hover {
+.button, .cell:selected, .cell:hover, .text-field, .tab, .tab:selected {
+	/* The Frutiger Aero Archive. (2025, March 16). linear-gradient background. frutigeraeroarchive.org */
 	-fx-background-color: linear-gradient(to top,#9ad1fc 0,#83c6f3 10%,#128ddf 50%,#0f75b9 50%,#137bc0 70%,#5bade4 100%);
 	-fx-text-fill: white;
 	-fx-border-color: #4da1da, #4da1da, #0a84d6, #4da1da;
@@ -12,17 +13,30 @@
 	-fx-font-weight: bold;
 }
 
-.topbar {
-	-fx-spacing: 15;
+.button:hover, .text-field:hover, .tab:hover, .tab:selected:hover {
+	-fx-background-color: linear-gradient(to top,rgba(184, 223, 252, 1) 0%, rgba(167, 217, 250, 1) 10%, rgba(64, 172, 245, 1) 50%, rgba(42, 142, 209, 1) 50%, rgba(58, 152, 214, 1) 70%, rgba(140, 206, 250, 1) 100%);
+	-fx-text-fill: white;
+	-fx-border-color: #6FB4E3, #6FB4E3, #2098E8, #6FB4E3;
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 5, 0, 0, 2);
 }
 
-.text-field {
+.buttonBar {
+	-fx-spacing: 10;
+}
+
+.text-field, .tab {
 	-fx-background-color: linear-gradient(to top,rgba(204, 204, 204, 1) 26%, rgba(232, 232, 232, 1) 48%, rgba(255, 255, 255, 1) 100%);
 	-fx-border-color: #bbb #bbb #aaa #bbb;
-	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 1, 0, 0, 2);
 }
-.text-field * {
-	-fx-effect: none;
+
+.text-field:hover, .tab:hover {
+	-fx-background-color: linear-gradient(to top,rgba(224, 224, 224, 1) 26%, rgba(252, 252, 252, 1) 48%, rgba(255, 255, 255, 1) 100%);
+	-fx-border-color: #ccc #ccc #bbb #ccc;
+}
+
+.tab {
+	-fx-background-radius: 10px 10px 0px 0px;
+	-fx-border-radius: 10px 10px 0px 0px;
 }
 
 .cell {

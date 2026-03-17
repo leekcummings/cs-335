@@ -53,6 +53,7 @@ public class Javafx extends Application {
     	int topBarWidth = 400;
     	topBar.setMaxWidth(topBarWidth);
     	topBar.setPrefWidth(Double.MAX_VALUE);
+    	topBar.getStyleClass().add("buttonBar");
     	
     	// Search bar (Doesn't work right now)
     	TextField searchBar = new TextField();    	
@@ -88,7 +89,7 @@ public class Javafx extends Application {
         mediaPlayer.setAutoPlay(true);
         MediaView mediaView = new MediaView(mediaPlayer);
         playBar.getChildren().addAll(mediaView,playButton, pauseButton);
-        
+        playBar.getStyleClass().add("buttonBar");
         
         // Add all elements to main window
         //border.getChildren().addAll(tabPane,topBar,playBar);  
@@ -113,6 +114,6 @@ public class Javafx extends Application {
         stage.show();
         
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
-        //scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
     }
 }
