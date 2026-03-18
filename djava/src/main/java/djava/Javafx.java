@@ -7,10 +7,13 @@ import java.io.File;
 import java.sql.Time;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,7 +23,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TabPane.TabClosingPolicy;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -83,21 +89,37 @@ public class Javafx extends Application {
         // Create all tabs and add to tabPane
     	tabPane.getTabs().add(createTab("Artist", new ArrayList<String>()));
     	tabPane.getTabs().add(createTab("Album", new ArrayList<String>()));
-    	//tabPane.getTabs().add(createTab("Song Title", new ArrayList<String>()));
     	//this is a test for adding columns
     	Tab tab = new Tab("Songs");
-        TreeTableView<File> treeTableView = new TreeTableView<>(); // Make content of tab ListView
-        TreeTableColumn<File,String> SongTitle = new TreeTableColumn<>("Song Title");
-        TreeTableColumn<File,String> Album = new TreeTableColumn<>("Album");
-        TreeTableColumn<File,String> Artist = new TreeTableColumn<>("Artist");
+    
         //https://codingtechroom.com/question/-javfx-treetableview-sorting-exception
-        treeTableView.getColumns().addAll(SongTitle,Album,Artist);
-    	tab.setContent(treeTableView);
+    	
+    	
+    	
+    	
+  
+    		
+    	
+    	TableView<Song> songTable = new TableView<>();
+    		
+    		//https://docs.oracle.com/en/java/java-components/javafx/25/docs/javafx.controls/javafx/scene/control/TableView.html
+    		//this can be an arraylist probably later
+    		
+		//this will work with the json file but don't have that implemented yet
+		List<Song> songs = List.of(new Song("Year Zero","Infesstisium","Ghost"),
+				new Song("The Call","Black & Blue","The Backstreet Boys"));
+		ObservableList<Song> rows = FXCollections.observableArrayList(songs);
+		songTable.setItems(rows);
+		TableColumn<Song,String> songTitle = new TableColumn<>("Title");
+    	TableColumn<Song,String> songAlbum = new TableColumn<>("Album");
+    	TableColumn<Song,String> songArtist = new TableColumn<>("Artist");
+    	songTable.getColumns().addAll(songTitle, songAlbum, songArtist);
+
+    	tab.setContent(songTable);
     	tabPane.getTabs().add(tab);
     	tabPane.getTabs().add(createTab("All Categories", new ArrayList<String>()));
     	tabPane.getTabs().add(createTab("Playlist", new ArrayList<String>()));
-    	treeTableView.getSortOrder().add(column);
-    	Collections.sort(items, comparator);
+
     	//https://www.youtube.com/watch?v=1wxygyOGtlc
     	
     	
@@ -162,7 +184,6 @@ public class Javafx extends Application {
         stage.setTitle("DJava Application (TEST)");
         stage.setScene(scene);
         stage.show();
-        
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
         scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
     }
