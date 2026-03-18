@@ -110,6 +110,13 @@ public class Javafx extends Application {
 				new Song("The Call","Black & Blue","The Backstreet Boys"));
 		ObservableList<Song> rows = FXCollections.observableArrayList(songs);
 		songTable.setItems(rows);
+		//basically what a tablecolumn is doing is being like an excel spread sheet where
+		//you can add row. I have a Song class that should take in title, album and artist
+		//which should be able to be added to the table into their respective columns
+		//i can't currently get it to work but there is plenty documentation out there for it
+		//basically once we get this to work with small examples like above with the list.of, then
+		//we should be able to read in from the json, and populate the table that way, theoretically
+		//that is the current main issue
 		TableColumn<Song,String> songTitle = new TableColumn<>("Title");
     	TableColumn<Song,String> songAlbum = new TableColumn<>("Album");
     	TableColumn<Song,String> songArtist = new TableColumn<>("Artist");
