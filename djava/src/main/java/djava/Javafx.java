@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javafx.application.Application;
@@ -16,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -41,33 +43,52 @@ public class Javafx extends Application {
 	Duration duration;
 	MediaPlayer mediaPlayer;
 	MediaView mediaView;
+	
+	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
+	// THIS IS A DEFAULT VALUE FOR TESTING
+	// This HashMap links the name of the column to the Song attribute
+	// It is linked because it's also in order of priority
+	static LinkedHashMap<String, String> songColNamesPriority = new LinkedHashMap<>(
+			Map.of("Artist", "artist",
+			"Album", "album",
+			"Title", "title"));
+	
     public static void main(String[] args) {
         launch(args);
     }
 
-    // Kind of the worst function ever but that's ok
     // Give it the row data of song info
-    // Then, list the columns in the order you want them to appear
-    // THEN, list the Song class attributes that pertain to each of those column names
-    // There's probably a better way to do this, but for now it's fine enough
-    public static TableView<Song> createTable(ObservableList<Song> rows, ArrayList<String> columns, ArrayList<String> songAttributes) {
+    // Then give it the column that is the main one from songColNamesPriority
+    // It'll handle the rest
+    public static TableView<Song> createTable(ObservableList<Song> rows, String priority) {
     	TableView<Song> table = new TableView<>();
     	ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
     	// Add songs to table
     	table.setItems(rows);
+    	// Do priority column first
+    	TableColumn<Song,String> firstCol = new TableColumn(priority);
+    	firstCol.setCellValueFactory(new PropertyValueFactory<Song,String>(songColNamesPriority.get(priority)));
+    	table.getColumns().add(firstCol);
+		sortOrder.add(firstCol);
     	// Create each column using arrays
-    	for (int i = 0; i < columns.size(); i++) {
-    		TableColumn<Song,String> column = new TableColumn(columns.get(i));
-    		column.setMinWidth(200);
-    		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttributes.get(i)));
-    		table.getColumns().add(column);
-    		sortOrder.add(column);
+    	for (Entry<String, String> col : songColNamesPriority.entrySet()) {
+    		String colName = col.getKey();
+    		String songAttribute = col.getValue();
+    		// If we haven't already added the column first
+    		if (colName != priority) {
+    			TableColumn<Song,String> column = new TableColumn(colName);
+        		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttribute));
+        		table.getColumns().add(column);
+        		sortOrder.add(column);
+    		}
     	}
     	// Reverse the order of columns to sort correctly
+    	// This broke idk why
     	Collections.reverse(sortOrder);
-    	for (TableColumn<Song, String> col : sortOrder) {
-    		// This adds multiple levels of sorting to the table
-    		table.getSortOrder().add(col);
+    	System.out.println(sortOrder);
+    	for (TableColumn<Song, String> sort : sortOrder) {
+    		System.out.println(sort.getText());
+    		table.getSortOrder().add(sort);
     	}
     	return table;
     }
@@ -107,7 +128,7 @@ public class Javafx extends Application {
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
     		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
     		// Extract song name, title, artist from HashMap
-    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("artistName")));    
+    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName")));    
     	}
     	// Turn the song array into an ObservableList (basically an array, but for Tables)
     	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
@@ -115,17 +136,22 @@ public class Javafx extends Application {
         // Tabs for different categories of music
         TabPane tabPane = new TabPane();
         
+        for (Entry<String, String> tab : songColNamesPriority.entrySet()) {
+        	tabPane.getTabs().add(createTab(tab.getKey(), createTable(rows, tab.getKey())));
+        }
+        
+        // I BORKED IT, this is the previous version
         // Create all tabs and add to tabPane
         // The createTable() function is stupid, please read note above
-    	tabPane.getTabs().add(createTab("Artist", createTable(rows,
-    			new ArrayList<>(List.of("Artist", "Album", "Title")),
-    			new ArrayList<>(List.of("artist", "album", "title")))));
-    	tabPane.getTabs().add(createTab("Album", createTable(rows,
-    			new ArrayList<>(List.of("Album", "Artist", "Title")),
-    			new ArrayList<>(List.of("album", "artist", "title")))));
-    	tabPane.getTabs().add(createTab("Song", createTable(rows,
-    			new ArrayList<>(List.of("Title", "Album", "Artist")),
-    			new ArrayList<>(List.of("title", "album", "artist")))));
+//    	tabPane.getTabs().add(createTab("Artist", createTable(rows,
+//    			new ArrayList<>(List.of("Artist", "Album", "#", "Title")),
+//    			new ArrayList<>(List.of("artist", "album", "track", "title")))));
+//    	tabPane.getTabs().add(createTab("Album", createTable(rows,
+//    			new ArrayList<>(List.of("Album", "Artist", "#", "Title")),
+//    			new ArrayList<>(List.of("album", "artist", "track", "title")))));
+//    	tabPane.getTabs().add(createTab("Song", createTable(rows,
+//    			new ArrayList<>(List.of("Title", "Album", "#", "Artist")),
+//    			new ArrayList<>(List.of("title", "album", "track", "artist")))));
     	
     	// All Categories and Playlist EMPTY for now
     	tabPane.getTabs().add(createTab("All Categories", new TableView<Song>()));

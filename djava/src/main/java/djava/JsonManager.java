@@ -35,7 +35,7 @@ public class JsonManager {
 	//it will, as one object, be written to the json file
 	static void makeMap() {songMap = new HashMap<>();}
 	
-	static void newMapElement(String song, String album, String artist, String filePath) {
+	static void newMapElement(String song, String album, String artist, String track, String filePath) {
 		//making an element to go in the map
 		//map will look like this:
 		/*
@@ -47,6 +47,7 @@ public class JsonManager {
 		 */
 		songMap.put(song, Map.of("albumTitle", album,
 								 "artistName", artist,
+								 "trackNumber", track,
 								 "filePath", filePath));
 	}
 	

@@ -77,8 +77,9 @@ public class MusicLib {
 			String song = tag.getFirst(FieldKey.TITLE);
 			String album = tag.getFirst(FieldKey.ALBUM);
 			String artist = tag.getFirst(FieldKey.ARTIST);
+			String track = tag.getFirst(FieldKey.TRACK);
 			String filePath = file.getAbsolutePath();
-			JsonManager.newMapElement(song,album,artist,filePath);
+			JsonManager.newMapElement(song,album,artist,track,filePath);
 		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
 				| InvalidAudioFrameException e) {
 			// TODO Auto-generated catch block
@@ -94,8 +95,9 @@ public class MusicLib {
 			String song = tag.getFirst(FieldKey.TITLE);
 			String album = tag.getFirst(FieldKey.ALBUM);
 			String artist = tag.getFirst(FieldKey.ARTIST);
+			String track = tag.getFirst(FieldKey.TRACK);
 			String filePath = file.getAbsolutePath();
-			JsonManager.newMapElement(song,album,artist,filePath);
+			JsonManager.newMapElement(song,album,artist,track,filePath);
 		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
 				| InvalidAudioFrameException e) {
 			// TODO Auto-generated catch block
