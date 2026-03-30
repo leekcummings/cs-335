@@ -12,9 +12,11 @@ public class ConfigManager {
 	
 	String filePath;
 	String directoryPath;
+	static String mediaPath;
 	
 	File configFile;
 	File programDir;
+	File mediaFile;
 	
 	//initializing method
 	ConfigManager(){
@@ -26,6 +28,9 @@ public class ConfigManager {
 		if(!fileExists()) { //check if file exists
 			makeFile();
 		} else {System.out.println("NOTE: Config file already exists");}
+		if(!mediaFileExists()) {
+			makeMediaFile();
+		}
 		
 	}
 	
@@ -54,12 +59,24 @@ public class ConfigManager {
 		return(false); } //file isn't in this location/doesn't exist
 	}
 	
+	boolean mediaFileExists() {
+		mediaFile = new File(mediaPath);
+		System.out.println(mediaFile);
+		if (mediaFile.exists()) {
+			System.out.println("NOTE: media.json file exists.");
+			return(true);
+		} else {System.out.println("NOTE: media.json file does NOT exist."); 
+		return(false); }
+	}
+	
 	void setFileDirPath() {
 		if(opSys == OS.WINDOWS){ //windows
 			filePath = System.getProperty("user.home") + "\\AppData\\Local\\djava\\config.json";
 			directoryPath = System.getProperty("user.home") + "\\AppData\\Local\\djava";
+			mediaPath = System.getProperty("user.home") + "\\AppData\\Local\\djava\\media.json";
 		} else { filePath = System.getProperty("user.home") + "/.config/djava/config.json";
 		directoryPath = System.getProperty("user.home") + "/.config/djava";} //unix
+		mediaPath = System.getProperty("user.home") + "/.config/djava/media.json";
 		System.out.println("ConfigFilePath: " + filePath);
 	}
 	
@@ -80,6 +97,22 @@ public class ConfigManager {
 			
 		} catch (IOException e) {
 			System.out.println("ERROR: Unable to make config file.");
+		}
+	}
+	
+	void makeMediaFile() {
+		try {
+			mediaFile.createNewFile();
+			System.out.println("NOTE: media.json file made.");
+			MusicDirectory.setDefaultDirectory(); //only want this to run
+			//when the config file is first being made so that it doesn't
+			//write over whenever they open the program b/c that would be annoying
+			
+			//default data in config file
+			//NEED TO WRITE
+			
+		} catch (IOException e) {
+			System.out.println("ERROR: Unable to make media.json file.");
 		}
 		
 	}

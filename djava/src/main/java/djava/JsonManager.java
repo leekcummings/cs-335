@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //https://www.javathinking.com/blog/how-to-convert-hashmap-to-json-object-in-java/
 //https://www.youtube.com/watch?v=s6QtjCKq_wA
 public class JsonManager {
+	static String path = ConfigManager.mediaPath;
 	
 	//static File json;
 	static Map<String, Object> songMap;
@@ -39,31 +40,32 @@ public class JsonManager {
 		//map will look like this:
 		/*
 		 "The Call":{
-		 songTitle: "The Call",
 		 albumTitle: "Black & Blue",
 		 artistName: "Backstreet Boys",
 		 filePath: "home/usr/music/Backstreet Boys/The Call.mp3"
 		 }
 		 */
-		songMap.put(song, Map.of("songTitle", song,
-								 "albumTitle", album,
+		songMap.put(song, Map.of("albumTitle", album,
 								 "artistName", artist,
 								 "filePath", filePath));
 	}
 	
-	static Map<String, Object> readFromJson() {
+	static void readFromJson() {
 		//i am profoundly lost right now
 //		ObjectMapper objectMapper = new ObjectMapper();
 //        JsonNode jsonNode = objectMapper.readTree(new File("media.json"));
         
+	
 		ObjectMapper objectMapper = new ObjectMapper();
-		File file = new File("media.json");
+		File file = new File(path);
+//		System.out.println(path);
+//		System.out.println(file.getAbsolutePath());
 		String abPath = file.getAbsolutePath();
 		Path filePath = Path.of(abPath);
 		String json = null;
 		try {
 			json = Files.readString(filePath);
-			System.out.println(json);
+//			System.out.println(json);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,41 +84,52 @@ public class JsonManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return(map);
+		songMap = map;
 	}
-	
-	static ArrayList<String> allSongsFromJson() {
-		ArrayList<String> songs = new ArrayList<>();
-		Map<String, Object> map = readFromJson();
-		Set<String> keys = map.keySet();
-		System.out.println(map.keySet());
-		return songs;
-	}
+//	
+//	static ArrayList<String> allSongsFromJson() {
+//		ArrayList<String> songs = new ArrayList<>();
+//		Map<String, Object> map = readFromJson();
+//		Set<String> keys = map.keySet();
+//		System.out.println(map.keySet());
+//		return songs;
+//	}
 		
 		
 	
 	static void writeToJson() {
 		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonObject = objectMapper.convertValue(songMap, JsonNode.class);
-		try {
-			String jsonString = objectMapper.writeValueAsString(jsonObject);
-			System.out.println("JSON String: " + jsonString);
+		System.out.println(songMap);
+		//JsonNode jsonObject = objectMapper.convertValue(songMap, JsonNode.class);
+//		try {
+//			String jsonString = objectMapper.writeValueAsString(jsonObject);
+//			System.out.println("JSON String: " + jsonString);
 			try {
+				
+				//used to be writing a string to the JSON now using
+				//object mapper to map the map to the JSON file instead, doesn't have
+				//to then worry about handling the string in-between and then the string
+				//being to long
+				
 				//String filePath = checkJsonDir();
-				FileWriter file = new FileWriter("media.json", false);
-				file.write(jsonString);
+				//FileWriter file = new FileWriter(path, false);
+				//String jsonString = objectMapper.writeValueAsString(jsonObject);
+				//System.out.println(jsonString);
+				//file.write(jsonString);
+				File file = new File(path);
+				objectMapper.writeValue(file, songMap);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.out.println("ERROR: Was not able to write to file");
 			} //will write the information to the json file
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("ERROR: Was not able to write string from map");
-		}
+//		} catch (JsonProcessingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			System.out.println("ERROR: Was not able to write string from map");
+//		}
 		//for now just printing it out
-		System.out.println("JSON Object (JsonNode): " + jsonObject);  
+//		System.out.println("JSON Object (JsonNode): " + jsonObject);  
 		//then write the string to a file
 	}
 	

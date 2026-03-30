@@ -2,24 +2,22 @@
 
 package djava;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.sql.Time;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -28,16 +26,12 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
@@ -51,11 +45,35 @@ public class Javafx extends Application {
         launch(args);
     }
 
-    public static Tab createTab(String title, ArrayList<String> content) {
+    // Kind of the worst function ever but that's ok
+    // Give it the row data of song info
+    // Then, list the columns in the order you want them to appear
+    // THEN, list the Song class attributes that pertain to each of those column names
+    // There's probably a better way to do this, but for now it's fine enough
+    public static TableView<Song> createTable(ObservableList<Song> rows, ArrayList<String> columns, ArrayList<String> songAttributes) {
+    	TableView<Song> table = new TableView<>();
+    	ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
+    	// Add songs to table
+    	table.setItems(rows);
+    	// Create each column using arrays
+    	for (int i = 0; i < columns.size(); i++) {
+    		TableColumn<Song,String> column = new TableColumn(columns.get(i));
+    		column.setMinWidth(200);
+    		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttributes.get(i)));
+    		table.getColumns().add(column);
+    		sortOrder.add(column);
+    	}
+    	// Reverse the order of columns to sort correctly
+    	Collections.reverse(sortOrder);
+    	for (TableColumn<Song, String> col : sortOrder) {
+    		// This adds multiple levels of sorting to the table
+    		table.getSortOrder().add(col);
+    	}
+    	return table;
+    }
+    public static Tab createTab(String title, TableView<Song> table) {
     	Tab tab = new Tab(title);
-        ListView<String> tabContent = new ListView<>(); // Make content of tab ListView
-        tabContent.getItems().addAll(content);
-    	tab.setContent(tabContent);
+    	tab.setContent(table);
     	return tab;
     }
     
@@ -83,52 +101,37 @@ public class Javafx extends Application {
         
         topBar.getChildren().addAll(searchBar, helpButton, settingsButton);
 
+        // Based on code from Oracle https://docs.oracle.com/javafx/2/ui_controls/table-view.htm   
+    	// Create ArrayList to hold song data for TableView
+    	ArrayList<Song> songs = new ArrayList<Song>();
+    	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
+    		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
+    		// Extract song name, title, artist from HashMap
+    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("artistName")));    
+    	}
+    	// Turn the song array into an ObservableList (basically an array, but for Tables)
+    	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
+        
         // Tabs for different categories of music
         TabPane tabPane = new TabPane();
         
         // Create all tabs and add to tabPane
-    	tabPane.getTabs().add(createTab("Artist", new ArrayList<String>()));
-    	tabPane.getTabs().add(createTab("Album", new ArrayList<String>()));
-    	//this is a test for adding columns
-    	Tab tab = new Tab("Songs");
-    
-        //https://codingtechroom.com/question/-javfx-treetableview-sorting-exception
+        // The createTable() function is stupid, please read note above
+    	tabPane.getTabs().add(createTab("Artist", createTable(rows,
+    			new ArrayList<>(List.of("Artist", "Album", "Title")),
+    			new ArrayList<>(List.of("artist", "album", "title")))));
+    	tabPane.getTabs().add(createTab("Album", createTable(rows,
+    			new ArrayList<>(List.of("Album", "Artist", "Title")),
+    			new ArrayList<>(List.of("album", "artist", "title")))));
+    	tabPane.getTabs().add(createTab("Song", createTable(rows,
+    			new ArrayList<>(List.of("Title", "Album", "Artist")),
+    			new ArrayList<>(List.of("title", "album", "artist")))));
     	
-    	
-    	
-    	
-  
-    		
-    	
-    	TableView<Song> songTable = new TableView<>();
-    		
-    		//https://docs.oracle.com/en/java/java-components/javafx/25/docs/javafx.controls/javafx/scene/control/TableView.html
-    		//this can be an arraylist probably later
-    		
-		//this will work with the json file but don't have that implemented yet
-		List<Song> songs = List.of(new Song("Year Zero","Infesstisium","Ghost"),
-				new Song("The Call","Black & Blue","The Backstreet Boys"));
-		ObservableList<Song> rows = FXCollections.observableArrayList(songs);
-		songTable.setItems(rows);
-		//basically what a tablecolumn is doing is being like an excel spread sheet where
-		//you can add row. I have a Song class that should take in title, album and artist
-		//which should be able to be added to the table into their respective columns
-		//i can't currently get it to work but there is plenty documentation out there for it
-		//basically once we get this to work with small examples like above with the list.of, then
-		//we should be able to read in from the json, and populate the table that way, theoretically
-		//that is the current main issue
-		TableColumn<Song,String> songTitle = new TableColumn<>("Title");
-    	TableColumn<Song,String> songAlbum = new TableColumn<>("Album");
-    	TableColumn<Song,String> songArtist = new TableColumn<>("Artist");
-    	songTable.getColumns().addAll(songTitle, songAlbum, songArtist);
-
-    	tab.setContent(songTable);
-    	tabPane.getTabs().add(tab);
-    	tabPane.getTabs().add(createTab("All Categories", new ArrayList<String>()));
-    	tabPane.getTabs().add(createTab("Playlist", new ArrayList<String>()));
+    	// All Categories and Playlist EMPTY for now
+    	tabPane.getTabs().add(createTab("All Categories", new TableView<Song>()));
+    	tabPane.getTabs().add(createTab("Playlist", new TableView<Song>()));
 
     	//https://www.youtube.com/watch?v=1wxygyOGtlc
-    	
     	
     	// Prevent user from closing tabs
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); 

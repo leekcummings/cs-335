@@ -10,4 +10,14 @@ public class Song {
 		this.album = al;
 		this.artist = ar;
 	}
+	// Get functions
+	public String getTitle() {
+		return this.title;
+	}
+	public String getAlbum() {
+		return this.album;
+	}
+	public String getArtist() {
+		return this.artist;
+	}
 }

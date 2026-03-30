@@ -4,6 +4,7 @@ package djava;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -57,9 +58,14 @@ public class MusicLib {
 //			//making it here bc its use is with this class specifically
 //			JsonManager.makeJson();
 //		}
+		
+//			JsonManager.readFromJson();
+
 		JsonManager.makeMap();
 		directoryScan(new File(MusicDirectory.get()));
 		JsonManager.writeToJson();
+		JsonManager.readFromJson();
+		
 	}
 	
 	//these two parsers might be able to be the same but I am unsure its a bit confusing
