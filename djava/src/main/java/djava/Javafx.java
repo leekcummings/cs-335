@@ -51,6 +51,7 @@ public class Javafx extends Application {
 	static LinkedHashMap<String, String> songColNamesPriority = new LinkedHashMap<>(
 			Map.of("Artist", "artist",
 			"Album", "album",
+			"#", "track",
 			"Title", "title"));
 	
     public static void main(String[] args) {
@@ -69,6 +70,7 @@ public class Javafx extends Application {
     	TableColumn<Song,String> firstCol = new TableColumn(priority);
     	firstCol.setCellValueFactory(new PropertyValueFactory<Song,String>(songColNamesPriority.get(priority)));
     	table.getColumns().add(firstCol);
+    	table.getSortOrder().add(firstCol);
 		sortOrder.add(firstCol);
     	// Create each column using arrays
     	for (Entry<String, String> col : songColNamesPriority.entrySet()) {
@@ -79,16 +81,9 @@ public class Javafx extends Application {
     			TableColumn<Song,String> column = new TableColumn(colName);
         		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttribute));
         		table.getColumns().add(column);
+        		table.getSortOrder().add(column);
         		sortOrder.add(column);
     		}
-    	}
-    	// Reverse the order of columns to sort correctly
-    	// This broke idk why
-    	Collections.reverse(sortOrder);
-    	System.out.println(sortOrder);
-    	for (TableColumn<Song, String> sort : sortOrder) {
-    		System.out.println(sort.getText());
-    		table.getSortOrder().add(sort);
     	}
     	return table;
     }
@@ -137,22 +132,11 @@ public class Javafx extends Application {
         TabPane tabPane = new TabPane();
         
         for (Entry<String, String> tab : songColNamesPriority.entrySet()) {
-        	tabPane.getTabs().add(createTab(tab.getKey(), createTable(rows, tab.getKey())));
+        	if (tab.getValue() != "track") {
+        		tabPane.getTabs().add(createTab(tab.getKey(), createTable(rows, tab.getKey())));
+        	}
         }
-        
-        // I BORKED IT, this is the previous version
-        // Create all tabs and add to tabPane
-        // The createTable() function is stupid, please read note above
-//    	tabPane.getTabs().add(createTab("Artist", createTable(rows,
-//    			new ArrayList<>(List.of("Artist", "Album", "#", "Title")),
-//    			new ArrayList<>(List.of("artist", "album", "track", "title")))));
-//    	tabPane.getTabs().add(createTab("Album", createTable(rows,
-//    			new ArrayList<>(List.of("Album", "Artist", "#", "Title")),
-//    			new ArrayList<>(List.of("album", "artist", "track", "title")))));
-//    	tabPane.getTabs().add(createTab("Song", createTable(rows,
-//    			new ArrayList<>(List.of("Title", "Album", "#", "Artist")),
-//    			new ArrayList<>(List.of("title", "album", "track", "artist")))));
-    	
+            	
     	// All Categories and Playlist EMPTY for now
     	tabPane.getTabs().add(createTab("All Categories", new TableView<Song>()));
     	tabPane.getTabs().add(createTab("Playlist", new TableView<Song>()));
