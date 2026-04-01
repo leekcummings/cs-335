@@ -74,16 +74,25 @@ public class MusicLib {
 		try {
 			m = AudioFileIO.read(file);
 			Tag tag = m.getTag();
-			String song = tag.getFirst(FieldKey.TITLE);
-			String album = tag.getFirst(FieldKey.ALBUM);
-			String artist = tag.getFirst(FieldKey.ARTIST);
-			String track = tag.getFirst(FieldKey.TRACK);
-			String filePath = file.getAbsolutePath();
-			JsonManager.newMapElement(song,album,artist,track,filePath);
+			//what this if statement does it basically for if a file doens't have ANY meta data
+			//if it has none it won't throw the exception but it WILL crash when it tries to getFirst(...) from
+			//the null instance so this is just fixing this
+			if(tag != null) {
+				String song = tag.getFirst(FieldKey.TITLE);
+				String album = tag.getFirst(FieldKey.ALBUM);
+				String artist = tag.getFirst(FieldKey.ARTIST);
+				String track = tag.getFirst(FieldKey.TRACK);
+				String filePath = file.getAbsolutePath();
+				JsonManager.newMapElement(song,album,artist,track,filePath);
+			}
+			else {
+				System.out.println("Tag is null for file: " + file);
+			}
 		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
 				| InvalidAudioFrameException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("Problem with file:" + file);
 		}
 	}
 	
@@ -92,17 +101,22 @@ public class MusicLib {
 		try {
 			f = AudioFileIO.read(file);
 			FlacTag tag = (FlacTag) f.getTag();
-			String song = tag.getFirst(FieldKey.TITLE);
-			String album = tag.getFirst(FieldKey.ALBUM);
-			String artist = tag.getFirst(FieldKey.ARTIST);
-			String track = tag.getFirst(FieldKey.TRACK);
-			String filePath = file.getAbsolutePath();
-			JsonManager.newMapElement(song,album,artist,track,filePath);
+			if(tag != null) {
+				String song = tag.getFirst(FieldKey.TITLE);
+				String album = tag.getFirst(FieldKey.ALBUM);
+				String artist = tag.getFirst(FieldKey.ARTIST);
+				String track = tag.getFirst(FieldKey.TRACK);
+				String filePath = file.getAbsolutePath();
+				JsonManager.newMapElement(song,album,artist,track,filePath);
+			}
+			else {
+				System.out.println("Tag is null for file: " + file);
+			}
 		} catch (CannotReadException | IOException | TagException | ReadOnlyFileException
 				| InvalidAudioFrameException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("ERROR: Unable to parse file");
+			//e.printStackTrace();
+			System.out.println("Problem with file:" + file);
 		}	
 	}
 	

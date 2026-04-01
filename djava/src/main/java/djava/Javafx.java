@@ -20,6 +20,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -41,8 +45,12 @@ public class Javafx extends Application {
 	Slider slider;
 	Time time;
 	Duration duration;
-	MediaPlayer mediaPlayer;
+	static MediaPlayer mediaPlayer;
+	static Media media;
 	MediaView mediaView;
+	static ArrayList<Song> queueList = new ArrayList<>();
+	static ArrayList<TableView<Song>> tables = new ArrayList<>();
+	TableView<Song> queue;
 	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
@@ -57,12 +65,38 @@ public class Javafx extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    
+    /////////////////////////////////
+    //==== QUEUE FUNCTIONALITY ====//
+    /////////////////////////////////
+   
+    public void addToBack(Song song) {
+    	queueList.add(song);
+    	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    }
+    
+    public void addToFront(Song song) {
+    	queueList.add(0,song);
+    	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    }
+    
+    public static void playSong(Song song) {
+    	mediaPlayer.stop();
+    	media = new Media(new File(song.getPath()).toURI().toString());
+    	mediaPlayer = new MediaPlayer(media);
+    	mediaPlayer.play();
+    }
 
     // Give it the row data of song info
     // Then give it the column that is the main one from songColNamesPriority
     // It'll handle the rest
     public static TableView<Song> createTable(ObservableList<Song> rows, String priority) {
     	TableView<Song> table = new TableView<>();
+    	//adding tables into an array (this makes it was easier later)
+    	tables.add(table);
+    	
+    	//this basically means that only one thing can be selected at a time
+    	table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     	ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
     	// Add songs to table
     	table.setItems(rows);
@@ -95,35 +129,64 @@ public class Javafx extends Application {
     
     @Override
     public void start(Stage stage) {
+    	
+			    	///////////////////////			
+			    	// ===== PANES ===== //
+			    	///////////////////////
     	BorderPane border = new BorderPane();
     	StackPane mainWindow = new StackPane(); // All modules will be appended to this mainWindow
+        //------------------------------------------------
     	
-    	// TOP BAR ITEMS (DOESN'T INCLUDE TABS FOR MUSIC)
+    	
+    	
+			    	///////////////////////			
+			    	// ===== H-BOX ===== //
+			    	///////////////////////
+    	/// // TOP BAR ITEMS (DOESN'T INCLUDE TABS FOR MUSIC)
     	HBox topBar = new HBox();
     	int topBarWidth = 400;
     	topBar.setMaxWidth(topBarWidth);
     	topBar.setPrefWidth(Double.MAX_VALUE);
     	topBar.getStyleClass().add("buttonBar");
+        //------------------------------------------------
     	
+    	
+			    	////////////////////////////			
+			    	// ===== SEARCH BAR ===== //
+			    	////////////////////////////
     	// Search bar (Doesn't work right now)
     	TextField searchBar = new TextField();    	
         searchBar.setPromptText("Search {CATEGORY}");
+        //------------------------------------------------
         
+        
+			    	/////////////////////////////////////////	
+			    	// ===== HELP N SETTINGS BUTTONS ===== //
+			    	////////////////////////////////////////
         // Buttons for help, settings, etc.
         Button helpButton = new Button("Help");
         helpButton.setMinWidth(50);
         Button settingsButton = new Button("Settings");
         settingsButton.setMinWidth(100);
+        //------------------------------------------------
         
+	        
+			    	/////////////////////////////////////////			
+			    	// ===== SETTING TOP BAR ELEMETS ===== //
+			    	/////////////////////////////////////////
         topBar.getChildren().addAll(searchBar, helpButton, settingsButton);
 
+        
+					/////////////////////////////////////////////			
+					// ===== TABLES FOR DISPLAYING MUSIC ===== //
+					/////////////////////////////////////////////
         // Based on code from Oracle https://docs.oracle.com/javafx/2/ui_controls/table-view.htm   
     	// Create ArrayList to hold song data for TableView
     	ArrayList<Song> songs = new ArrayList<Song>();
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
     		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
     		// Extract song name, title, artist from HashMap
-    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName")));    
+    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));    
     	}
     	// Turn the song array into an ObservableList (basically an array, but for Tables)
     	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
@@ -138,7 +201,7 @@ public class Javafx extends Application {
         }
             	
     	// All Categories and Playlist EMPTY for now
-    	tabPane.getTabs().add(createTab("All Categories", new TableView<Song>()));
+//    	tabPane.getTabs().add(createTab("All Categories", new TableView<Song>()));
     	tabPane.getTabs().add(createTab("Playlist", new TableView<Song>()));
 
     	//https://www.youtube.com/watch?v=1wxygyOGtlc
@@ -146,27 +209,88 @@ public class Javafx extends Application {
     	// Prevent user from closing tabs
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); 
         
+				////////////////////////////////////
+				// ===== RIGHT CLICK  MENU ===== //
+				///////////////////////////////////
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem addToQueue = new MenuItem("Add To Queue");
+        MenuItem addToFront = new MenuItem("Play Next");
+        contextMenu.getItems().add(addToQueue);
+        
+        
+        //maybe i dont need the for loop but i cant check that till i have t he displaying fixed
+        addToQueue.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		addToBack(table.getSelectionModel().getSelectedItem());
+        	}
+        });
+        
+        addToFront.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		addToFront(table.getSelectionModel().getSelectedItem());
+        	}
+        });
+        
+        //adding it to the tab pane only
+        tabPane.setContextMenu(contextMenu);
+        	
+        
+				//////////////////////////
+				// ===== CLICKING ===== //
+				//////////////////////////
+		
+        for(TableView<Song> table: tables) {
+        	table.autosize();
+        	table.setOnMouseClicked(event ->{
+        		if(event.getClickCount() == 2) {
+        			//basically start playing the song
+        			playSong(table.getSelectionModel().getSelectedItem());	
+        		}
+        	});
+        }
+
+        
+				///////////////////////
+				// ===== QUEUE ===== //
+				///////////////////////
+        queue = new TableView<>();
+        TableColumn queueColumn = new TableColumn("Queue");
+        //nameColumn.setCellValueFactory(new PropertyValueFactory<String>("name"));
+        queue.getColumns().setAll(queueColumn);
+        ObservableList<Song> data = (ObservableList<Song>) FXCollections.observableArrayList(queueList);
+        
+        
+				//////////////////////////		
+				// ===== PLAY BAR ===== //
+				//////////////////////////
         //all of the stuff below is for the play bar
         HBox playBar = new HBox();
         int playBarWidth = 400;
     	playBar.setMaxWidth(playBarWidth);
     	playBar.autosize();
-    	//buttons for playbar
-    	Button playButton = new Button("Play");
     	
+    	//BUTTONS===============================
+    	Button playButton = new Button("Play");
     	Button pauseButton = new Button("Pause");
     	Button nextButton = new Button("Next");
     	Button lastButton = new Button("Last");
+    	
     	playButton.setMinWidth(50);
     	pauseButton.setMinWidth(50);
     	nextButton.setMinWidth(50);
     	lastButton.setMinWidth(50);
+    	//=======================================
+    	
+    	
     	//this is going to change, jsut temp for playing music n testing
         String path = "660452__seth_makes_sounds__free-commercial-song.wav";
-        Media media = new Media(new File(path).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        media = new Media(new File(path).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+        //look into this!!!!!!!!!!!!!!!
+//        mediaPlayer.onEndOfMedia( {}
+//        );
         //music plays on default, this is temp n for testing
-        mediaPlayer.setAutoPlay(true);
+        //mediaPlayer.setAutoPlay(true);
         mediaView = new MediaView(mediaPlayer);
         //slider
         slider = new Slider();
@@ -179,9 +303,15 @@ public class Javafx extends Application {
         playBar.getChildren().addAll(mediaView,lastButton,pauseButton,playButton,slider,nextButton);
         playBar.getStyleClass().add("buttonBar");
         
+        
+        
+        
+		//////////////////////////////////////////////			
+		// ===== ADDING ELEMENTS TO MAIN WIND ===== //
+		//////////////////////////////////////////////
         // Add all elements to main window
         //border.getChildren().addAll(tabPane,topBar,playBar);  
-    	mainWindow.getChildren().addAll(tabPane,topBar);        
+    	mainWindow.getChildren().addAll(tabPane);        
 //        VBox.setVgrow(tabPane, Priority.ALWAYS); // Allows tab pane to extend to bottom of screen
         StackPane.setAlignment(topBar, Pos.TOP_RIGHT); // Push search/buttons to the right
         BorderPane.setAlignment(playBar, Pos.BOTTOM_LEFT);
@@ -195,8 +325,10 @@ public class Javafx extends Application {
         //adding the elements to the borderpane, you have to do them
         //seperate like this for adding them to different regions else it
         //doesn't work
+        border.setRight(queue);
         border.setBottom(playBar);
         border.setCenter(mainWindow);
+        border.setTop(topBar);
         
         //Scene scene = new Scene(mainWindow, 800, 600);
         Scene scene = new Scene(border, 800, 600);
@@ -205,6 +337,8 @@ public class Javafx extends Application {
         stage.setScene(scene);
         stage.show();
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
-        scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
+        //scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
+    
+       
     }
 }

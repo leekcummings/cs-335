@@ -75,8 +75,10 @@ public class ConfigManager {
 			directoryPath = System.getProperty("user.home") + "\\AppData\\Local\\djava";
 			mediaPath = System.getProperty("user.home") + "\\AppData\\Local\\djava\\media.json";
 		} else { filePath = System.getProperty("user.home") + "/.config/djava/config.json";
-		directoryPath = System.getProperty("user.home") + "/.config/djava";} //unix
+		directoryPath = System.getProperty("user.home") + "/.config/djava";
 		mediaPath = System.getProperty("user.home") + "/.config/djava/media.json";
+		} //unix
+		
 		System.out.println("ConfigFilePath: " + filePath);
 	}
 	

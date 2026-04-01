@@ -5,12 +5,14 @@ public class Song {
 	private String album;
 	private String track;
 	private String artist;
+	private String path;
 	
-	public Song (String ti, String al, String tr, String ar) {
+	public Song (String ti, String al, String tr, String ar, String p) {
 		this.title = ti;
 		this.album = al;
 		this.track = tr;
 		this.artist = ar;
+		this.path = p;
 	}
 	// Get functions
 	public String getTitle() {
@@ -24,5 +26,8 @@ public class Song {
 	}
 	public String getArtist() {
 		return this.artist;
+	}
+	public String getPath() {
+		return this.path;
 	}
 }
