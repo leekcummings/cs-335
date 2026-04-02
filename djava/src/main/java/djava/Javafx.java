@@ -214,20 +214,34 @@ public class Javafx extends Application {
 				///////////////////////////////////
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addToQueue = new MenuItem("Add To Queue");
-        MenuItem addToFront = new MenuItem("Play Next");
-        contextMenu.getItems().add(addToQueue);
+        MenuItem playNext = new MenuItem("Play Next");
+        MenuItem playNow = new MenuItem("Play");
+        contextMenu.getItems().addAll(addToQueue, playNext, playNow);
         
         
         //maybe i dont need the for loop but i cant check that till i have t he displaying fixed
         addToQueue.setOnAction(e -> {
         	for(TableView<Song> table: tables) {
-        		addToBack(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        		addToBack(table.getSelectionModel().getSelectedItem());}
         	}
         });
         
-        addToFront.setOnAction(e -> {
+        playNext.setOnAction(e -> {
         	for(TableView<Song> table: tables) {
-        		addToFront(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        		addToFront(table.getSelectionModel().getSelectedItem());}
+        	}
+        });
+        
+        playNow.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		System.out.print(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
+        			playSong(table.getSelectionModel().getSelectedItem());
+        		}
+        		
         	}
         });
         
