@@ -3,8 +3,24 @@
 	-fx-border-color: transparent;
 }
 
+.table-row-cell {
+	-fx-cell-size: 30;
+	-fx-background-color: #ffffff;
+	-fx-border-color: transparent #bbb #aaa #bbb;
+}
+
+/* Alternating cell colors on ListView */
+.table-row-cell:even {
+	-fx-background-color: #f0f0f0;
+}
+
+.table-row-cell:hover {
+	-fx-background-color: linear-gradient(to top,rgba(79, 163, 219, 1) 60%, rgba(189, 240, 242, 1) 100%);
+	-fx-text-fill: white;
+}
+
 /* Blue shiny buttons */
-.button, .cell:selected, .cell:hover, .text-field, .tab, .tab:selected {
+.button, .table-row-cell:selected, .table-row-cell:hover, .text-field, .tab, .tab:selected {
 	/* The Frutiger Aero Archive. (2025, March 16). linear-gradient background. frutigeraeroarchive.org */
 	-fx-background-color: linear-gradient(to top,#9ad1fc 0,#83c6f3 10%,#128ddf 50%,#0f75b9 50%,#137bc0 70%,#5bade4 100%);
 	-fx-text-fill: white;
@@ -39,22 +55,15 @@
 	-fx-border-radius: 10px 10px 0px 0px;
 }
 
-.cell {
-	-fx-cell-size: 30;
-	-fx-background-color: #ffffff;
-	-fx-border-color: transparent #bbb #aaa #bbb;
-}
-
-/* Alternating cell colors on ListView */
-.cell:even {
-	-fx-background-color: #f0f0f0;
-}
-
-.cell:hover {
-	-fx-background-color: linear-gradient(to top,rgba(79, 163, 219, 1) 60%, rgba(189, 240, 242, 1) 100%);
+.tab:selected *, .table-row-cell:hover * {
+	-fx-text-fill: white;
 }
 
 .button, .text-field {
 	-fx-background-radius: 10px;
 	-fx-border-radius: 10px;
+}
+
+.popup {
+	-fx-background-color: white;
 }

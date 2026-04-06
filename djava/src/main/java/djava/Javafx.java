@@ -6,22 +6,21 @@ import java.io.File;
 import java.sql.Time;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
@@ -33,12 +32,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 public class Javafx extends Application {
@@ -127,6 +128,22 @@ public class Javafx extends Application {
     	return tab;
     }
     
+    public static GridPane createSettingsGrid() {
+    	GridPane grid = new GridPane();
+    	grid.setAlignment(Pos.CENTER);
+    	grid.setHgap(10);
+    	grid.setVgap(10);
+    	grid.setPadding(new Insets(25, 25, 25, 25));
+    	
+    	Label musicDirectory = new Label("Music Directory: " + MusicDirectory.get());
+    	grid.add(musicDirectory, 0, 1);
+    	
+    	Button musicDirButton = new Button("Change Music Directory");
+    	grid.add(musicDirButton, 1, 1);
+
+		return grid;
+    }
+    
     @Override
     public void start(Stage stage) {
     	
@@ -168,6 +185,29 @@ public class Javafx extends Application {
         helpButton.setMinWidth(50);
         Button settingsButton = new Button("Settings");
         settingsButton.setMinWidth(100);
+        
+        // Based on https://www.geeksforgeeks.org/java/javafx-popup-class/
+        // create a popup
+        Popup popup = new Popup();
+        GridPane settingsGrid = createSettingsGrid();
+        settingsGrid.getStyleClass().add("popup");
+        popup.getContent().add(settingsGrid);
+ 
+        // action event
+        EventHandler<ActionEvent> settingsEvent = 
+        new EventHandler<ActionEvent>() {
+ 
+            public void handle(ActionEvent e)
+            {
+                if (!popup.isShowing())
+                    popup.show(stage);
+                else
+                    popup.hide();
+            }
+        };
+ 
+        // when button is pressed
+        settingsButton.setOnAction(settingsEvent);
         //------------------------------------------------
         
 	        
@@ -267,13 +307,18 @@ public class Javafx extends Application {
 				///////////////////////
 				// ===== QUEUE ===== //
 				///////////////////////
-        queue = new TableView<>();
-        TableColumn queueColumn = new TableColumn("Queue");
-        //nameColumn.setCellValueFactory(new PropertyValueFactory<String>("name"));
-        queue.getColumns().setAll(queueColumn);
         ObservableList<Song> data = (ObservableList<Song>) FXCollections.observableArrayList(queueList);
+        System.out.println(queueList);
+        queue = new TableView<>();
+        queue.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        TableColumn<Song, String> nameColumn = new TableColumn("Title");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+        TableColumn<Song, String> artistColumn = new TableColumn("Artist");
+        artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
         
-        
+        queue.getColumns().addAll(nameColumn, artistColumn);
+        queue.setItems(data);
+
 				//////////////////////////		
 				// ===== PLAY BAR ===== //
 				//////////////////////////
@@ -351,7 +396,7 @@ public class Javafx extends Application {
         stage.setScene(scene);
         stage.show();
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
-        //scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
     
        
     }

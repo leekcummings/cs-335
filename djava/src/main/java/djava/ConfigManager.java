@@ -11,7 +11,7 @@ public class ConfigManager {
 	static public OS opSys;
 	
 	String filePath;
-	String directoryPath;
+	static String directoryPath;
 	static String mediaPath;
 	
 	File configFile;
