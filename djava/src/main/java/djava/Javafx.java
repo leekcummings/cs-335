@@ -56,7 +56,7 @@ public class Javafx extends Application {
 	TableView<Song> queue;
 	Slider volumeSlider;
 	int queueIndex = 0;
-	Duration lastDet = new Duration(3000);
+	Duration lastDet = new Duration(2000);
 	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
@@ -77,11 +77,12 @@ public class Javafx extends Application {
     /////////////////////////////////
    
     public void addToBack(Song song) {
+    	if(queueList.size() == 0) {
+    		playSong(song);
+    	}
     	queueList.add(song);
     	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
-    	if(queueIndex == 0 && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
-    		playSong(queueList.get(0));
-    	}
+    	
     }
     
     public void addToFront(Song song) {
@@ -89,6 +90,7 @@ public class Javafx extends Application {
     		queueList.add(queueIndex+1,song);
     	}else {
     		queueList.add(queueIndex,song);
+    		playSong(song);
     	}
     	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
     }
