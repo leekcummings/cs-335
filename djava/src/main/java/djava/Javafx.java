@@ -121,7 +121,7 @@ public class Javafx extends Application {
     
     public void playLast() {
     	if(mediaPlayer.getCurrentTime().lessThan(lastDet)) {
-    		if(queueIndex-1 <= 0){
+    		if(queueIndex-1 < 0){
         		System.out.println("Out of range of queue");
         	} else {
         		queueIndex--;
