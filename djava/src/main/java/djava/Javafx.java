@@ -2,9 +2,9 @@
 
 package djava;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Time;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,12 +35,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Javafx extends Application {
 	Slider slider;
@@ -52,6 +54,9 @@ public class Javafx extends Application {
 	static ArrayList<Song> queueList = new ArrayList<>();
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
 	TableView<Song> queue;
+	Slider volumeSlider;
+	int queueIndex = 0;
+	Duration lastDet = new Duration(3000);
 	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
@@ -74,10 +79,17 @@ public class Javafx extends Application {
     public void addToBack(Song song) {
     	queueList.add(song);
     	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    	if(queueIndex == 0 && mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING) {
+    		playSong(queueList.get(0));
+    	}
     }
     
     public void addToFront(Song song) {
-    	queueList.add(0,song);
+    	if(queueList.size() > 0) {
+    		queueList.add(queueIndex+1,song);
+    	}else {
+    		queueList.add(queueIndex,song);
+    	}
     	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
     }
     
@@ -87,7 +99,40 @@ public class Javafx extends Application {
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
     }
+    
+    public void clearQueue() {
+    	queueList.clear();
+    	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    	queueIndex = 0;
+    }
 
+		////////////////////////////////////////
+		//==== MUSIC PLAYER FUNCTIONALITY ====//
+		////////////////////////////////////////
+	
+    public void playNext() {
+    	if(queueIndex+1 > queueList.size()){
+    		System.out.println("Out of range of queue" + queueList.size());
+    	} else {
+    		queueIndex++;
+    		playSong(queueList.get(queueIndex));
+    	}
+    }
+    
+    public void playLast() {
+    	if(mediaPlayer.getCurrentTime().lessThan(lastDet)) {
+    		if(queueIndex-1 <= 0){
+        		System.out.println("Out of range of queue");
+        	} else {
+        		queueIndex--;
+        		playSong(queueList.get(queueIndex));
+        	}
+    	} else {
+    		playSong(queueList.get(queueIndex));
+    	}
+    	
+    }
+		    
     // Give it the row data of song info
     // Then give it the column that is the main one from songColNamesPriority
     // It'll handle the rest
@@ -281,7 +326,6 @@ public class Javafx extends Application {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
         			playSong(table.getSelectionModel().getSelectedItem());
         		}
-        		
         	}
         });
         
@@ -296,8 +340,10 @@ public class Javafx extends Application {
         for(TableView<Song> table: tables) {
         	table.autosize();
         	table.setOnMouseClicked(event ->{
-        		if(event.getClickCount() == 2) {
+        		if(event.getClickCount() == 2)  {
         			//basically start playing the song
+        			clearQueue();
+        			addToFront(table.getSelectionModel().getSelectedItem());
         			playSong(table.getSelectionModel().getSelectedItem());	
         		}
         	});
@@ -329,15 +375,34 @@ public class Javafx extends Application {
     	playBar.autosize();
     	
     	//BUTTONS===============================
-    	Button playButton = new Button("Play");
-    	Button pauseButton = new Button("Pause");
-    	Button nextButton = new Button("Next");
-    	Button lastButton = new Button("Last");
+    	Button playButton = new Button("▷");
+    	Button pauseButton = new Button("||");
+    	Button nextButton = new Button(">>");
+    	Button lastButton = new Button("<<");
+    	Button clearQueueButton = new Button("Clear Queue");
+
     	
+    	clearQueueButton.setOnAction(event -> {clearQueue();});
+    	playButton.setOnAction(event -> {mediaPlayer.play();});
+        pauseButton.setOnAction(event -> {mediaPlayer.pause();});
+        nextButton.setOnAction(event -> {playNext();});
+        lastButton.setOnAction(event -> {playLast();});
+
     	playButton.setMinWidth(50);
     	pauseButton.setMinWidth(50);
-    	nextButton.setMinWidth(50);
-    	lastButton.setMinWidth(50);
+    	nextButton.setMinWidth(35);
+    	lastButton.setMinWidth(35);
+    	clearQueueButton.setMinWidth(80);
+    	
+    	Label volumeLabel = new Label("Vol: ");
+    	volumeLabel.setMinWidth(20);
+    	
+    	volumeSlider = new Slider();        
+    	volumeSlider.setPrefWidth(100);
+    	volumeSlider.setMaxWidth(130);
+    	volumeSlider.setMinWidth(80);
+    	
+    	
     	//=======================================
     	
     	
@@ -346,21 +411,25 @@ public class Javafx extends Application {
         media = new Media(new File(path).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         //look into this!!!!!!!!!!!!!!!
-//        mediaPlayer.onEndOfMedia( {}
-//        );
+        mediaPlayer.setOnEndOfMedia( () -> {playNext();});
         //music plays on default, this is temp n for testing
         //mediaPlayer.setAutoPlay(true);
-        mediaView = new MediaView(mediaPlayer);
         //slider
         slider = new Slider();
         HBox.setHgrow(slider, Priority.ALWAYS);
         slider.setMinSize(300, 50);
         //button actions (PLAY N PAUSE)
-        playButton.setOnAction(event -> {mediaPlayer.play();});
-        pauseButton.setOnAction(event -> {mediaPlayer.pause();});
         //idk if the mediaview there is necessary
-        playBar.getChildren().addAll(mediaView,lastButton,pauseButton,playButton,slider,nextButton);
+        playBar.getChildren().addAll(lastButton,pauseButton,playButton,slider,nextButton,volumeLabel,volumeSlider,clearQueueButton);
         playBar.getStyleClass().add("buttonBar");
+        
+//        volumeSlider.valueProperty().addListener(new InvalidationListener() {
+//    	    public void invalidated(Observable ov) {
+//    	       if (volumeSlider.isValueChanging()) {
+//    	           mediaPlayer.setVolume(volumeSlider.getValue() / 100.0);
+//    	       }
+//    	    }
+//    	});
         
         
         
