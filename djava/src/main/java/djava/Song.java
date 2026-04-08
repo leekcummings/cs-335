@@ -1,19 +1,27 @@
 package djava;
 
+import java.lang.Integer;
+
 public class Song {
 	private String title;
 	private String album;
-	private String track;
+	private int track;
 	private String artist;
 	private String path;
 	
 	public Song (String ti, String al, String tr, String ar, String p) {
 		this.title = ti;
 		this.album = al;
-		this.track = tr;
+		try {
+			this.track = Integer.parseInt(tr);
+		}
+		catch (Exception e){
+			this.track = 0;
+		}
 		this.artist = ar;
 		this.path = p;
 	}
+	
 	// Get functions
 	public String getTitle() {
 		return this.title;
@@ -21,7 +29,7 @@ public class Song {
 	public String getAlbum() {
 		return this.album;
 	}
-	public String getTrack() {
+	public int getTrack() {
 		return this.track;
 	}
 	public String getArtist() {

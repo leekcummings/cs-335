@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,14 +14,17 @@ import java.util.Map.Entry;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
@@ -34,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -42,6 +47,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 public class Javafx extends Application {
@@ -132,43 +138,62 @@ public class Javafx extends Application {
     	} else {
     		playSong(queueList.get(queueIndex));
     	}
+    }
+    
+    public void album(Song song){
     	
     }
-		    
+    
+    public void albumNext(Song song) {
+    	
+    }
+    
+    public void artist(Song song) {
+    	
+    }
+    
+    public void artistNext(Song song) {
+    	
+    }
+    
+		
+    //================THIS NO LONGER/CURRENTLY HAS USE===================//
     // Give it the row data of song info
     // Then give it the column that is the main one from songColNamesPriority
     // It'll handle the rest
-    public static TableView<Song> createTable(ObservableList<Song> rows, String priority) {
-    	TableView<Song> table = new TableView<>();
-    	//adding tables into an array (this makes it was easier later)
-    	tables.add(table);
-    	
-    	//this basically means that only one thing can be selected at a time
-    	table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-    	ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
-    	// Add songs to table
-    	table.setItems(rows);
-    	// Do priority column first
-    	TableColumn<Song,String> firstCol = new TableColumn(priority);
-    	firstCol.setCellValueFactory(new PropertyValueFactory<Song,String>(songColNamesPriority.get(priority)));
-    	table.getColumns().add(firstCol);
-    	table.getSortOrder().add(firstCol);
-		sortOrder.add(firstCol);
-    	// Create each column using arrays
-    	for (Entry<String, String> col : songColNamesPriority.entrySet()) {
-    		String colName = col.getKey();
-    		String songAttribute = col.getValue();
-    		// If we haven't already added the column first
-    		if (colName != priority) {
-    			TableColumn<Song,String> column = new TableColumn(colName);
-        		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttribute));
-        		table.getColumns().add(column);
-        		table.getSortOrder().add(column);
-        		sortOrder.add(column);
-    		}
-    	}
-    	return table;
-    }
+//    public static TableView<Song> createTable(ObservableList<Song> rows, String priority) {
+//    	TableView<Song> table = new TableView<>();
+//    	//adding tables into an array (this makes it was easier later)
+//    	tables.add(table);
+//    	
+//    	//this basically means that only one thing can be selected at a time
+//    	table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+//    	ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
+//    	// Add songs to table
+//    	table.setItems(rows);
+//    	// Do priority column first
+//    	TableColumn<Song,String> firstCol = new TableColumn(priority);
+//    	firstCol.setCellValueFactory(new PropertyValueFactory<Song,String>(songColNamesPriority.get(priority)));
+//    	table.getColumns().add(firstCol);
+//    	table.getSortOrder().add(firstCol);
+//		sortOrder.add(firstCol);
+//    	// Create each column using arrays
+//    	for (Entry<String, String> col : songColNamesPriority.entrySet()) {
+//    		String colName = col.getKey();
+//    		String songAttribute = col.getValue();
+//    		// If we haven't already added the column first
+//    		if (colName != priority) {
+//    			TableColumn<Song,String> column = new TableColumn(colName);
+//        		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttribute));
+//        		table.getColumns().add(column);
+//        		table.getSortOrder().add(column);
+//        		sortOrder.add(column);
+//    		}
+//    	}
+//    	return table;
+//    }
+    
+    
     public static Tab createTab(String title, TableView<Song> table) {
     	Tab tab = new Tab(title);
     	tab.setContent(table);
@@ -220,7 +245,14 @@ public class Javafx extends Application {
 			    	////////////////////////////
     	// Search bar (Doesn't work right now)
     	TextField searchBar = new TextField();    	
-        searchBar.setPromptText("Search {CATEGORY}");
+        searchBar.setPromptText("Search...");
+
+        ComboBox comboBox = new ComboBox();
+        comboBox.setMinWidth(100);
+        comboBox.getItems().addAll("All","Title","Album","Artist");
+        comboBox.setEditable(false); 
+        comboBox.setValue("All");
+
         //------------------------------------------------
         
         
@@ -261,7 +293,7 @@ public class Javafx extends Application {
 			    	/////////////////////////////////////////			
 			    	// ===== SETTING TOP BAR ELEMETS ===== //
 			    	/////////////////////////////////////////
-        topBar.getChildren().addAll(searchBar, helpButton, settingsButton);
+        topBar.getChildren().addAll(searchBar, comboBox, helpButton, settingsButton);
 
         
 					/////////////////////////////////////////////			
@@ -269,32 +301,133 @@ public class Javafx extends Application {
 					/////////////////////////////////////////////
         // Based on code from Oracle https://docs.oracle.com/javafx/2/ui_controls/table-view.htm   
     	// Create ArrayList to hold song data for TableView
+        //=====================================================================================================================================
     	ArrayList<Song> songs = new ArrayList<Song>();
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
     		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
     		// Extract song name, title, artist from HashMap
-    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));    
+    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));  
     	}
     	// Turn the song array into an ObservableList (basically an array, but for Tables)
     	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
-        
+    	//=====================================================================================================================================
+    	
+    	
+    	
         // Tabs for different categories of music
-        TabPane tabPane = new TabPane();
         
-        for (Entry<String, String> tab : songColNamesPriority.entrySet()) {
-        	if (tab.getValue() != "track") {
-        		tabPane.getTabs().add(createTab(tab.getKey(), createTable(rows, tab.getKey())));
-        	}
-        }
+        
+        
+//        for (Entry<String, String> tab : songColNamesPriority.entrySet()) {
+//        	if (tab.getValue() != "track") {
+//        		tabPane.getTabs().add(createTab(tab.getKey(), createTable(rows, tab.getKey())));
+//        	}
+//        }
             	
-    	// All Categories and Playlist EMPTY for now
-//    	tabPane.getTabs().add(createTab("All Categories", new TableView<Song>()));
-    	tabPane.getTabs().add(createTab("Playlist", new TableView<Song>()));
+        
+//        tabPane.getTabs().add(createTab("Albums", new TableView<Song>()));
+//        tabPane.getTabs().add(createTab("Artists", new TableView<Song>()));
+//    	tabPane.getTabs().add(createTab("Playlist", new TableView<Song>()));
+    	
+    	//========== TITLES ===========//
+        //Tab t = createTab("Media", new TableView<Song>());
+    	//mediaPane.getChildren().addAll(t);
+    	
+    	TableView<Song> tableView = new TableView<>();
+    	//adding tables into an array (this makes it was easier later)
+    	tables.add(tableView);
+    	
+    	//this basically means that only one thing can be selected at a time
+    	tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+    	//ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
+    	// Add songs to table
+    	TableColumn<Song,String> title = new TableColumn("Title");
+    	TableColumn<Song,Integer> track = new TableColumn("#");
+    	TableColumn<Song,String> album = new TableColumn("Album");
+    	TableColumn<Song,String> artist = new TableColumn("Artist");
+    	tableView.setItems(rows);
+    	// Do priority column first
+    	title.setCellValueFactory(new PropertyValueFactory<Song,String>("title"));
+    	album.setCellValueFactory(new PropertyValueFactory<Song,String>("album"));
+    	artist.setCellValueFactory(new PropertyValueFactory<Song,String>("artist"));
+    	track.setCellValueFactory(new PropertyValueFactory<Song,Integer>("track"));
+    	tableView.getColumns().addAll(album,track,title,artist);
+		tableView.getSortOrder().addAll(album,track);
+		tableView.setItems(rows);
+		track.setMinWidth(25);
+		track.setMaxWidth(25);
+		track.setSortable(false);
+		title.setMinWidth(150);
+		artist.setMinWidth(80);
+		album.setMinWidth(100);
+		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+    	// Create each column using arrays
+    		
 
     	//https://www.youtube.com/watch?v=1wxygyOGtlc
-    	
     	// Prevent user from closing tabs
-        tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); 
+        //tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); 
+        //t.setContent(tableView);
+        
+        
+		//////////////////////////////////
+		//==== SEARCH FUNCTIONALITY ====//
+		//////////////////////////////////
+		//https://codingtechroom.com/question/-javafx-tableview-search-textfield -- motified to fit the way that we are filtering (discovered FilteredList from this source)
+		FilteredList<Song> filteredData = new FilteredList<Song>(FXCollections.observableArrayList(songs), p -> true);
+		
+		searchBar.textProperty().addListener((observable, oldValue, newValue) -> {
+		filteredData.setPredicate(song -> {
+		// If filter text is empty, display all persons.
+		if (newValue == null || newValue.isEmpty()) {
+		return true;
+		}
+		
+		// Compare first name and last name of every person with filter text.
+		String lowerCaseFilter = newValue.toLowerCase();
+		
+		String value = comboBox.getValue().toString();
+		//checks all relivant fields
+		if(value.compareTo("All") == 0) {
+			if (song.getTitle().toLowerCase().contains(lowerCaseFilter)) {
+				return true; // Filter matches first name.
+				} else if (song.getAlbum().toLowerCase().contains(lowerCaseFilter)) {
+				return true; // Filter matches last name.
+				} else if (song.getArtist().toLowerCase().contains(lowerCaseFilter)) {
+				return true; // Filter matches last name.
+				}return false; // Does not match.
+				//only checks these fields
+		} else if(value.compareTo("Title") == 0) {
+			if (song.getTitle().toLowerCase().contains(lowerCaseFilter)) {
+				return true; // Filter matches first name.
+				}return false; // Does not match.
+		} else if(value.compareTo("Album") == 0) {
+			if (song.getAlbum().toLowerCase().contains(lowerCaseFilter)) {
+				return true;
+				}return false; // Does not match.
+		} else if(value.compareTo("Artist") == 0) {
+			if (song.getArtist().toLowerCase().contains(lowerCaseFilter)) {
+				return true;
+				}return false; 
+		}// Does not match.
+		return false;
+		});
+		tableView.setItems(filteredData);
+		// I FEEL LIKE THIS SHOULD BE WORKING BUT IT ISNTTTT
+		tableView.sort();
+		});
+		
+		
+        // Whenever the comboBox is changed (like from All to Title), it sets the TextField to blank then back to what it was
+		//this basically just resets the function method that is above ^^^^ so it searches again but based now on the new comboBox contents
+        comboBox.setOnAction(event ->{
+        	String text = searchBar.getText();
+        	if (text != null) {
+        		searchBar.setText(" ");
+        		searchBar.setText(text);
+        	}
+        });
         
 				////////////////////////////////////
 				// ===== RIGHT CLICK  MENU ===== //
@@ -303,7 +436,11 @@ public class Javafx extends Application {
         MenuItem addToQueue = new MenuItem("Add To Queue");
         MenuItem playNext = new MenuItem("Play Next");
         MenuItem playNow = new MenuItem("Play");
-        contextMenu.getItems().addAll(addToQueue, playNext, playNow);
+        MenuItem addAlbum = new MenuItem("Add Album To Queue");
+        MenuItem addAlbumNext = new MenuItem("Add Album Next");
+        MenuItem addArtist = new MenuItem("Add Artist To Queue");
+        MenuItem addArtistNext = new MenuItem("Add Artist Next");
+        contextMenu.getItems().addAll(addToQueue, playNext, addAlbum, addAlbumNext, addArtist, addArtistNext, playNow);
         
         
         //maybe i dont need the for loop but i cant check that till i have t he displaying fixed
@@ -331,8 +468,50 @@ public class Javafx extends Application {
         	}
         });
         
+        addAlbum.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		System.out.print(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
+        			album(table.getSelectionModel().getSelectedItem());
+        		}
+        	}
+        });
+        
+        addAlbumNext.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		System.out.print(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
+        			albumNext(table.getSelectionModel().getSelectedItem());
+        		}
+        	}
+        });
+        
+        addArtist.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		System.out.print(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
+        			artist(table.getSelectionModel().getSelectedItem());
+        		}
+        		
+        	}
+        });
+        
+        addArtistNext.setOnAction(e -> {
+        	for(TableView<Song> table: tables) {
+        		System.out.print(table.getSelectionModel().getSelectedItem());
+        		if(table.getSelectionModel().getSelectedItem()!= null) {
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
+        			artistNext(table.getSelectionModel().getSelectedItem());
+        		}
+        	}
+        });
+        
         //adding it to the tab pane only
-        tabPane.setContextMenu(contextMenu);
+        tableView.setContextMenu(contextMenu);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         	
         
 				//////////////////////////
@@ -340,7 +519,7 @@ public class Javafx extends Application {
 				//////////////////////////
 		
         for(TableView<Song> table: tables) {
-        	table.autosize();
+        	//table.autosize();
         	table.setOnMouseClicked(event ->{
         		if(event.getClickCount() == 2)  {
         			//basically start playing the song
@@ -361,11 +540,20 @@ public class Javafx extends Application {
         queue.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         TableColumn<Song, String> nameColumn = new TableColumn("Title");
         nameColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("title"));
+        TableColumn<Song, String> albumColumn = new TableColumn("Album");
+        albumColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("album"));
         TableColumn<Song, String> artistColumn = new TableColumn("Artist");
         artistColumn.setCellValueFactory(new PropertyValueFactory<Song, String>("artist"));
-        
-        queue.getColumns().addAll(nameColumn, artistColumn);
+        nameColumn.setMinWidth(50);
+        albumColumn.setMinWidth(50);
+        artistColumn.setMinWidth(50);
+        nameColumn.setPrefWidth(200);
+        queue.getColumns().addAll(nameColumn, albumColumn, artistColumn);
         queue.setItems(data);
+        queue.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        queue.setMinWidth(300);
+        queue.setMaxWidth(600);
+        queue.setPrefWidth(450);
 
 				//////////////////////////		
 				// ===== PLAY BAR ===== //
@@ -377,7 +565,7 @@ public class Javafx extends Application {
     	playBar.autosize();
     	
     	//BUTTONS===============================
-    	Button playButton = new Button("▷");
+    	Button playButton = new Button("|>");
     	Button pauseButton = new Button("||");
     	Button nextButton = new Button(">>");
     	Button lastButton = new Button("<<");
@@ -439,25 +627,32 @@ public class Javafx extends Application {
 		//////////////////////////////////////////////			
 		// ===== ADDING ELEMENTS TO MAIN WIND ===== //
 		//////////////////////////////////////////////
+		/// 
+        HBox mediaPane = new HBox();
+        HBox.setHgrow(mainWindow, Priority.ALWAYS);
+        mediaPane.getChildren().addAll(mainWindow,queue);
         // Add all elements to main window
         //border.getChildren().addAll(tabPane,topBar,playBar);  
-    	mainWindow.getChildren().addAll(tabPane);        
+    	mainWindow.getChildren().addAll(tableView);        
 //        VBox.setVgrow(tabPane, Priority.ALWAYS); // Allows tab pane to extend to bottom of screen
         StackPane.setAlignment(topBar, Pos.TOP_RIGHT); // Push search/buttons to the right
         BorderPane.setAlignment(playBar, Pos.BOTTOM_LEFT);
         //padding n margin stuff that can probably be added to css later
         BorderPane.setMargin(playBar, new Insets(10,10,10,10));
         StackPane.setMargin(topBar, new Insets(10,10,10,10));
-        tabPane.setPadding(new Insets(10,10,10,10));
+        //tabPane.setPadding(new Insets(10,10,10,10));
         topBar.setPadding(new Insets(5,5,5,5));
-        tabPane.setTabMinHeight(28);
+        queue.minWidth(2000);
+        queue.maxWidth(2000);
+        queue.prefWidth(2000);
+        //tabPane.setTabMinHeight(28);
         
         //adding the elements to the borderpane, you have to do them
         //seperate like this for adding them to different regions else it
         //doesn't work
-        border.setRight(queue);
+        //border.setRight(queue);
         border.setBottom(playBar);
-        border.setCenter(mainWindow);
+        border.setCenter(mediaPane);
         border.setTop(topBar);
         
         //Scene scene = new Scene(mainWindow, 800, 600);
@@ -467,7 +662,7 @@ public class Javafx extends Application {
         stage.setScene(scene);
         stage.show();
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
-        scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
+        //scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
     
        
     }
