@@ -65,6 +65,11 @@ public class Javafx extends Application {
 	Duration lastDet = new Duration(2000);
 	ArrayList<Song> songs;
 	
+	TableColumn<Song,String> title;
+	TableColumn<Song,Integer> track;
+	TableColumn<Song,String> album;
+	TableColumn<Song,String> artist;
+	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
 	// This HashMap links the name of the column to the Song attribute
@@ -420,10 +425,10 @@ public class Javafx extends Application {
     	tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     	//ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
     	// Add songs to table
-    	TableColumn<Song,String> title = new TableColumn("Title");
-    	TableColumn<Song,Integer> track = new TableColumn("#");
-    	TableColumn<Song,String> album = new TableColumn("Album");
-    	TableColumn<Song,String> artist = new TableColumn("Artist");
+    	title = new TableColumn("Title");
+    	track = new TableColumn("#");
+    	album = new TableColumn("Album");
+    	artist = new TableColumn("Artist");
     	tableView.setItems(rows);
     	// Do priority column first
     	title.setCellValueFactory(new PropertyValueFactory<Song,String>("title"));
@@ -494,7 +499,7 @@ public class Javafx extends Application {
 		});
 		tableView.setItems(FXCollections.observableArrayList(filteredData));
 		// I FEEL LIKE THIS SHOULD BE WORKING BUT IT ISNTTTT
-		tableView.getSortOrder().removeAll();
+		tableView.getSortOrder().removeAll(album, track);
 		tableView.getSortOrder().addAll(album,track);
 		tableView.sort();
 		tableView.refresh();
@@ -746,7 +751,7 @@ public class Javafx extends Application {
         stage.setScene(scene);
         stage.show();
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
-        //scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
     
        
     }
