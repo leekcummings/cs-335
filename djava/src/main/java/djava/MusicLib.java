@@ -39,10 +39,10 @@ public class MusicLib {
 						mp3ToJson(file);
 						//files.add(file.getAbsolutePath());		  //adding mp3s to the list, to get rid of unnecessary
 					}//headaches (again can be changed for flacs later)
-					else if(file.getAbsolutePath().matches(".*flac")) {
-						//make json for flac
-						flacToJson(file);
-					}
+//					else if(file.getAbsolutePath().matches(".*flac")) {
+//						//make json for flac
+//						flacToJson(file);
+//					}
 				}
 			}
 		}
