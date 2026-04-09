@@ -102,12 +102,18 @@ public class Javafx extends Application {
     	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
     }
     
-    public void addManyToBack(FilteredList<Song> list) {
+    public void addManyToBack(ArrayList<Song> list) {
     	for(Song song: list) {
     		addToBack(song);
     	}
     }
     
+    public void addManyToNext(ArrayList<Song> list) {
+    	for(int i = 0; i<list.size();i++) {
+    		addToFront(list.get(list.size()-1-i));
+    	}
+    }
+
     public static void playSong(Song song) {
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
@@ -147,7 +153,7 @@ public class Javafx extends Application {
     	}
     }
     
-    public void album(Song song){
+    public ArrayList<Song> albumAdding(Song song) {
     	String lowerCaseFilter = song.getAlbum().toLowerCase();
     	FilteredList<Song> filteredData = new FilteredList<Song>(FXCollections.observableArrayList(songs), p -> {
     		// If filter text is empty, display all persons.
@@ -157,23 +163,76 @@ public class Javafx extends Application {
     			return true;
     			}return false; // Does not match.
     	});
-		addManyToBack(filteredData);
+		
 		ArrayList<Song> sortedData = new ArrayList<>();
 		for(Song s:filteredData) {
-			for()
+			if(sortedData.size() == 0) {
+				sortedData.add(s);
+			}
+			for(Song data: sortedData) {
+				if (s.getTrack() <= data.getTrack()) {
+					sortedData.add(sortedData.indexOf(data), s);
+					break;
+				} else if (s.getTrack() >= data.getTrack() && sortedData.indexOf(data) == sortedData.size()-1) {
+					sortedData.add(s);
+					break;
+				}
+			}
 		}
+		//System.out.println(sortedData);
+		return(sortedData);
+		
+    }
+    
+    public void album(Song song){
+    	addManyToBack(albumAdding(song));
     }
     
     public void albumNext(Song song) {
-    	
+		addManyToNext(albumAdding(song));
+    }
+    
+    public ArrayList<Song> artistAdding(Song song) {
+    	String lowerCaseFilter = song.getArtist().toLowerCase();
+    	FilteredList<Song> filteredData = new FilteredList<Song>(FXCollections.observableArrayList(songs), p -> {
+    		// If filter text is empty, display all persons.
+    		// Compare first name and last name of every person with filter text.
+    		//checks all relivant fields
+    		if (p.getArtist().toLowerCase().contains(lowerCaseFilter)) {
+    			return true;
+    			}return false; // Does not match.
+    	});
+		
+		ArrayList<Song> sortedData = new ArrayList<>();
+		for(Song s:filteredData) {
+			if(sortedData.size() == 0) {
+				sortedData.add(s);
+			}
+			for(Song data: sortedData) {
+				if(s.getAlbum().compareTo(data.getAlbum()) == 0){
+					if (s.getTrack() <= data.getTrack() ) {
+						sortedData.add(sortedData.indexOf(data), s);
+						break;
+					}
+				}
+				else if(s.getAlbum().compareTo(data.getAlbum()) < 0) {
+					sortedData.add(sortedData.indexOf(data), s);
+					break;
+				} else if (s.getAlbum().compareTo(data.getAlbum()) > 0 && s.getTrack() >= data.getTrack() && sortedData.indexOf(data) == sortedData.size()-1) {
+					sortedData.add(s);
+					break;
+				}
+			}
+		}
+		return(sortedData);
     }
     
     public void artist(Song song) {
-    	
+    	addManyToBack(artistAdding(song));
     }
     
     public void artistNext(Song song) {
-    	
+    	addManyToNext(artistAdding(song));
     }
     
 		
@@ -486,6 +545,8 @@ public class Javafx extends Application {
         		System.out.print(table.getSelectionModel().getSelectedItem());
         		if(table.getSelectionModel().getSelectedItem()!= null) {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
+        			clearQueue();
+        			addToFront(table.getSelectionModel().getSelectedItem());
         			playSong(table.getSelectionModel().getSelectedItem());
         		}
         	}
