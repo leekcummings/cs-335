@@ -63,6 +63,7 @@ public class Javafx extends Application {
 	Slider volumeSlider;
 	int queueIndex = 0;
 	Duration lastDet = new Duration(2000);
+	ArrayList<Song> songs;
 	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
@@ -99,6 +100,12 @@ public class Javafx extends Application {
     		playSong(song);
     	}
     	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    }
+    
+    public void addManyToBack(FilteredList<Song> list) {
+    	for(Song song: list) {
+    		addToBack(song);
+    	}
     }
     
     public static void playSong(Song song) {
@@ -141,7 +148,20 @@ public class Javafx extends Application {
     }
     
     public void album(Song song){
-    	
+    	String lowerCaseFilter = song.getAlbum().toLowerCase();
+    	FilteredList<Song> filteredData = new FilteredList<Song>(FXCollections.observableArrayList(songs), p -> {
+    		// If filter text is empty, display all persons.
+    		// Compare first name and last name of every person with filter text.
+    		//checks all relivant fields
+    		if (p.getAlbum().toLowerCase().contains(lowerCaseFilter)) {
+    			return true;
+    			}return false; // Does not match.
+    	});
+		addManyToBack(filteredData);
+		ArrayList<Song> sortedData = new ArrayList<>();
+		for(Song s:filteredData) {
+			for()
+		}
     }
     
     public void albumNext(Song song) {
@@ -302,7 +322,7 @@ public class Javafx extends Application {
         // Based on code from Oracle https://docs.oracle.com/javafx/2/ui_controls/table-view.htm   
     	// Create ArrayList to hold song data for TableView
         //=====================================================================================================================================
-    	ArrayList<Song> songs = new ArrayList<Song>();
+    	songs = new ArrayList<Song>();
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
     		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
     		// Extract song name, title, artist from HashMap
@@ -413,9 +433,12 @@ public class Javafx extends Application {
 		}// Does not match.
 		return false;
 		});
-		tableView.setItems(filteredData);
+		tableView.setItems(FXCollections.observableArrayList(filteredData));
 		// I FEEL LIKE THIS SHOULD BE WORKING BUT IT ISNTTTT
+		tableView.getSortOrder().removeAll();
+		tableView.getSortOrder().addAll(album,track);
 		tableView.sort();
+		tableView.refresh();
 		});
 		
 		
