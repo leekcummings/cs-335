@@ -64,7 +64,7 @@ public class Javafx extends Application {
 	int queueIndex = 0;
 	Duration lastDet = new Duration(2000);
 	ArrayList<Song> songs;
-	
+	Label songLabel = new Label();
 	TableColumn<Song,String> title;
 	TableColumn<Song,Integer> track;
 	TableColumn<Song,String> album;
@@ -124,6 +124,7 @@ public class Javafx extends Application {
     	media = new Media(new File(song.getPath()).toURI().toString());
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
+    	
     }
     
     public void clearQueue() {
@@ -673,6 +674,7 @@ public class Javafx extends Application {
     	lastButton.setMinWidth(35);
     	clearQueueButton.setMinWidth(80);
     	
+    	
     	Label volumeLabel = new Label("Vol: ");
     	volumeLabel.setMinWidth(20);
     	
@@ -699,7 +701,7 @@ public class Javafx extends Application {
         slider.setMinSize(300, 50);
         //button actions (PLAY N PAUSE)
         //idk if the mediaview there is necessary
-        playBar.getChildren().addAll(lastButton,pauseButton,playButton,slider,nextButton,volumeLabel,volumeSlider,clearQueueButton);
+        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,slider,nextButton,volumeLabel,volumeSlider,clearQueueButton);
         playBar.getStyleClass().add("buttonBar");
         
 //        volumeSlider.valueProperty().addListener(new InvalidationListener() {
