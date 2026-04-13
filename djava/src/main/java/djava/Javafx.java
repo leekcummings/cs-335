@@ -61,10 +61,11 @@ public class Javafx extends Application {
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
 	TableView<Song> queue;
 	Slider volumeSlider;
-	int queueIndex = 0;
+	static int queueIndex = 0;
 	Duration lastDet = new Duration(2000);
 	ArrayList<Song> songs;
-	Label songLabel = new Label();
+	static Label songLabel;
+	
 	TableColumn<Song,String> title;
 	TableColumn<Song,Integer> track;
 	TableColumn<Song,String> album;
@@ -124,6 +125,8 @@ public class Javafx extends Application {
     	media = new Media(new File(song.getPath()).toURI().toString());
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
+    	//the way this info is and what's displayed can be changed just like this for now though
+    	songLabel.setText(queueList.get(queueIndex).getTitle() + " by " + queueList.get(queueIndex).getArtist() + " from " + queueList.get(queueIndex).getAlbum());
     	
     }
     
@@ -678,6 +681,12 @@ public class Javafx extends Application {
     	Label volumeLabel = new Label("Vol: ");
     	volumeLabel.setMinWidth(20);
     	
+    	
+    	songLabel = new Label();
+    	songLabel.setMinWidth(100);
+    	//makes the text wrap
+    	songLabel.setWrapText(true);
+    	
     	volumeSlider = new Slider();        
     	volumeSlider.setPrefWidth(100);
     	volumeSlider.setMaxWidth(130);
@@ -736,6 +745,7 @@ public class Javafx extends Application {
         queue.minWidth(2000);
         queue.maxWidth(2000);
         queue.prefWidth(2000);
+        playBar.setMinHeight(100);
         //tabPane.setTabMinHeight(28);
         
         //adding the elements to the borderpane, you have to do them
