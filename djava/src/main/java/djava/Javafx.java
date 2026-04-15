@@ -251,42 +251,6 @@ public class Javafx extends Application {
     	addManyToNext(artistAdding(song));
     }
     
-		
-    //================THIS NO LONGER/CURRENTLY HAS USE===================//
-    // Give it the row data of song info
-    // Then give it the column that is the main one from songColNamesPriority
-    // It'll handle the rest
-//    public static TableView<Song> createTable(ObservableList<Song> rows, String priority) {
-//    	TableView<Song> table = new TableView<>();
-//    	//adding tables into an array (this makes it was easier later)
-//    	tables.add(table);
-//    	
-//    	//this basically means that only one thing can be selected at a time
-//    	table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//    	ArrayList<TableColumn<Song,String>> sortOrder = new ArrayList<>();
-//    	// Add songs to table
-//    	table.setItems(rows);
-//    	// Do priority column first
-//    	TableColumn<Song,String> firstCol = new TableColumn(priority);
-//    	firstCol.setCellValueFactory(new PropertyValueFactory<Song,String>(songColNamesPriority.get(priority)));
-//    	table.getColumns().add(firstCol);
-//    	table.getSortOrder().add(firstCol);
-//		sortOrder.add(firstCol);
-//    	// Create each column using arrays
-//    	for (Entry<String, String> col : songColNamesPriority.entrySet()) {
-//    		String colName = col.getKey();
-//    		String songAttribute = col.getValue();
-//    		// If we haven't already added the column first
-//    		if (colName != priority) {
-//    			TableColumn<Song,String> column = new TableColumn(colName);
-//        		column.setCellValueFactory(new PropertyValueFactory<Song,String>(songAttribute));
-//        		table.getColumns().add(column);
-//        		table.getSortOrder().add(column);
-//        		sortOrder.add(column);
-//    		}
-//    	}
-//    	return table;
-//    }
     
     public void setSongs() {
     	songs.clear();
@@ -309,8 +273,7 @@ public class Javafx extends Application {
 
     	//https://www.youtube.com/watch?v=1wxygyOGtlc
     	// Prevent user from closing tabs
-        //tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE); 
-        //t.setContent(tableView);
+        
     }
     
     
@@ -349,11 +312,7 @@ public class Javafx extends Application {
     			if(file != null) {
     				directoryLabel.setText(file.toString());
     			}
-    			//File file = directoryChooser.showDialog();
-    			//if (file != null) {
-    				//directoryLabel.setText(file.getAbsolutePath() + "selected");
-    			 // closes file != null
-    		// closes handle action event
+    			
     	});
     	
     	VBox vbox = new VBox(30, directoryLabel, button);
@@ -367,36 +326,13 @@ public class Javafx extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception{
-    	
-    	
-    	
-    	
-    	
-    	
-    	
+
 			    	///////////////////////			
 			    	// ===== PANES ===== //
 			    	///////////////////////
     	BorderPane border = new BorderPane();
     	StackPane mainWindow = new StackPane(); // All modules will be appended to this mainWindow
         //------------------------------------------------
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
     	
 			    	///////////////////////			
 			    	// ===== H-BOX ===== //
@@ -408,18 +344,7 @@ public class Javafx extends Application {
     	topBar.setPrefWidth(Double.MAX_VALUE);
     	topBar.getStyleClass().add("buttonBar");
         //------------------------------------------------
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
+
     	
 			    	////////////////////////////			
 			    	// ===== SEARCH BAR ===== //
@@ -435,21 +360,6 @@ public class Javafx extends Application {
         comboBox.setValue("All");
 
         //------------------------------------------------
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
 			    	/////////////////////////////////////////	
@@ -485,18 +395,7 @@ public class Javafx extends Application {
         settingsButton.setOnAction(settingsEvent);
         //------------------------------------------------
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
 				//////////////////////////////		
 				// ===== FILE CHOOSER===== //
 				/////////////////////////////
@@ -538,11 +437,7 @@ public class Javafx extends Application {
 	    		searchBar.setText(" ");
 	    		searchBar.setText(text);
 	    	}
-			//File file = directoryChooser.showDialog();
-			//if (file != null) {
-				//directoryLabel.setText(file.getAbsolutePath() + "selected");
-			 // closes file != null
-		// closes handle action event
+			
 	});
     	
     	VBox vbox = new VBox(30, directoryLabel, dirButton, refButton);
@@ -554,32 +449,13 @@ public class Javafx extends Application {
     	//filePickerStage.show();
         //musicDirectoryChange(directoryChooser, filePickerStage);
 	        
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
+
 			    	/////////////////////////////////////////			
 			    	// ===== SETTING TOP BAR ELEMETS ===== //
 			    	/////////////////////////////////////////
         topBar.getChildren().addAll(searchBar, comboBox, helpButton, settingsButton);
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         
 					/////////////////////////////////////////////			
 					// ===== TABLES FOR DISPLAYING MUSIC ===== //
@@ -624,46 +500,8 @@ public class Javafx extends Application {
 		artist.setMinWidth(80);
 		album.setMinWidth(100);
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-	
-        // Based on code from Oracle https://docs.oracle.com/javafx/2/ui_controls/table-view.htm   
-    	// Create ArrayList to hold song data for TableView
-        //=====================================================================================================================================
-//    	songs = new ArrayList<Song>();
-//    	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
-//    		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
-//    		// Extract song name, title, artist from HashMap
-//    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));  
-//    	}
-//    	// Turn the song array into an ObservableList (basically an array, but for Tables)
-//    	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
-    	//=====================================================================================================================================  
-        // Tabs for different categories of music
-//        for (Entry<String, String> tab : songColNamesPriority.entrySet()) {
-//        	if (tab.getValue() != "track") {
-//        		tabPane.getTabs().add(createTab(tab.getKey(), createTable(rows, tab.getKey())));
-//        	}
-//        }
-//        tabPane.getTabs().add(createTab("Albums", new TableView<Song>()));
-//        tabPane.getTabs().add(createTab("Artists", new TableView<Song>()));
-//    	tabPane.getTabs().add(createTab("Playlist", new TableView<Song>()));
+
     	
-    	//========== TITLES ===========//
-        //Tab t = createTab("Media", new TableView<Song>());
-    	//mediaPane.getChildren().addAll(t);
-    	
-    	
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
 		//////////////////////////////////
 		//==== SEARCH FUNCTIONALITY ====//
@@ -726,22 +564,7 @@ public class Javafx extends Application {
         	}
         });
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         
 				////////////////////////////////////
 				// ===== RIGHT CLICK  MENU ===== //
@@ -829,20 +652,7 @@ public class Javafx extends Application {
         tableView.setContextMenu(contextMenu);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         	
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
 				//////////////////////////
 				// ===== CLICKING ===== //
 				//////////////////////////
@@ -859,20 +669,7 @@ public class Javafx extends Application {
         	});
         }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         
 				///////////////////////
 				// ===== QUEUE ===== //
@@ -898,20 +695,7 @@ public class Javafx extends Application {
         queue.setMaxWidth(600);
         queue.setPrefWidth(450);
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
 				//////////////////////////		
 				// ===== PLAY BAR ===== //
 				//////////////////////////
@@ -979,21 +763,6 @@ public class Javafx extends Application {
 //    	    }
 //    	});
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 		//////////////////////////////////////////////			
 		// ===== ADDING ELEMENTS TO MAIN WIND ===== //
 		//////////////////////////////////////////////
@@ -1033,7 +802,5 @@ public class Javafx extends Application {
         primaryStage.show();
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
         scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
-    
-       
     }
 }
