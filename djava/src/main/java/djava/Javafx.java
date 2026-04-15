@@ -64,10 +64,10 @@ public class Javafx extends Application {
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
 	TableView<Song> queue;
 	Slider volumeSlider;
-	int queueIndex = 0;
+	static int queueIndex = 0;
 	Duration lastDet = new Duration(2000);
 	ArrayList<Song> songs;
-	Label songLabel = new Label();
+	static Label songLabel = new Label();
 	TableColumn<Song,String> title;
 	TableColumn<Song,Integer> track;
 	TableColumn<Song,String> album;
@@ -127,7 +127,7 @@ public class Javafx extends Application {
     	media = new Media(new File(song.getPath()).toURI().toString());
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
-    	songLabel = Label(queueList.get(queueIndex).getTitle());
+    	songLabel = new Label(queueList.get(queueIndex).getTitle());
     	songLabel.setMinWidth(40);
     	
     }
@@ -305,11 +305,15 @@ public class Javafx extends Application {
 
 		return grid;
     }
+    
+    
     public void musicDirectoryChange(DirectoryChooser directoryChooser, Stage stage) {
     	Label directoryLabel = new Label("no files selected");
     	Button button = new Button("Show");
-    	EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
-    		public void handle(ActionEvent e) {
+    	//EventHandler<ActionEvent> event = new EventHandler<ActionEvent>(
+    	//		); // closes event handler 
+    	
+    	button.setOnAction(event -> {
     			directoryChooser.setTitle("Open Resource File");
     			File file = directoryChooser.showDialog(new Stage());
     			if(file != null) {
@@ -318,15 +322,14 @@ public class Javafx extends Application {
     			//File file = directoryChooser.showDialog();
     			//if (file != null) {
     				//directoryLabel.setText(file.getAbsolutePath() + "selected");
-    			} // closes file != null
+    			 // closes file != null
     		// closes handle action event
-    	} // closes event handler
-    	
-    	button.setOnAction(event);
+    	});
     	
     	VBox vbox = new VBox(30, directoryLabel, button);
     	vbox.setAlignment(Pos.CENTER);
     }
+    
     @Override
     public void start(Stage stage) {
     	

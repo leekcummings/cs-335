@@ -35,8 +35,12 @@ public class MusicLib {
 			for (File file : dir.listFiles()) { //iterating through each file
 				if(file.isDirectory()) {directoryScan(file);}
 				else {
-					if(file.getAbsolutePath().matches(".*mp3")) { //this is just to make sure that we are only
-						mp3ToJson(file);
+					if(file.getAbsolutePath().matches(".*mp3") || file.getAbsolutePath().matches(".*wav")) { //this is just to make sure that we are only
+						if(ConfigManager.opSys == OS.UNIX && file.getAbsolutePath().matches(".*mp3")) {
+							continue;
+						} else {
+							mp3WavToJson(file);
+						}
 						//files.add(file.getAbsolutePath());		  //adding mp3s to the list, to get rid of unnecessary
 					}//headaches (again can be changed for flacs later)
 //					else if(file.getAbsolutePath().matches(".*flac")) {
@@ -69,7 +73,7 @@ public class MusicLib {
 	}
 	
 	//these two parsers might be able to be the same but I am unsure its a bit confusing
-	static void mp3ToJson(File file) {
+	static void mp3WavToJson(File file) {
 		AudioFile m;
 		try {
 			m = AudioFileIO.read(file);
@@ -119,6 +123,7 @@ public class MusicLib {
 			System.out.println("Problem with file:" + file);
 		}	
 	}
+
 	
 // 					THIS IS ALL OLD STUFF!!!!!!!!! WILL BE DELETED ONCE IK WE DON'T NEED IT
 //	static String[] getMetadata(String fileLocation) {
