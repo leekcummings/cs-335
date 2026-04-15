@@ -301,36 +301,31 @@ public class Javafx extends Application {
     	grid.add(musicDirectory, 0, 1);
     	
     	Button musicDirButton = new Button("Change Music Directory");
-    	musicDirButton.setOnAction(event -> {musicDirectoryChange()});
     	grid.add(musicDirButton, 1, 1);
 
 		return grid;
     }
-    public void musicDirectoryChange(Stage stage) {
-    	stage.setTitle("Directory Chooser");
-    	DirectoryChooser directoryChooser = new DirectoryChooser();
+    public void musicDirectoryChange(DirectoryChooser directoryChooser, Stage stage) {
     	Label directoryLabel = new Label("no files selected");
     	Button button = new Button("Show");
     	EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
     		public void handle(ActionEvent e) {
-    			File file = directoryChooser.showDialog(stage);
-    			if (file != null) {
-    				directoryLabel.setText(file.getAbsolutePath() + "selected");
+    			directoryChooser.setTitle("Open Resource File");
+    			File file = directoryChooser.showDialog(new Stage());
+    			if(file != null) {
+    				directoryLabel.setText(file.toString());
+    			}
+    			//File file = directoryChooser.showDialog();
+    			//if (file != null) {
+    				//directoryLabel.setText(file.getAbsolutePath() + "selected");
     			} // closes file != null
-    		} // closes handle action event
-    	}; // closes event handler
+    		// closes handle action event
+    	} // closes event handler
     	
     	button.setOnAction(event);
     	
-    	VBox vbox = new VBox(30, label, button);
+    	VBox vbox = new VBox(30, directoryLabel, button);
     	vbox.setAlignment(Pos.CENTER);
-    	Scene scene = new Scene(vbox, 800, 500);
-    	stage.setScene(scene);
-    	stage.show();
-    }
-    catch (Exception e) {
-    	System.out.println(e.getMessage());
-    }
     }
     @Override
     public void start(Stage stage) {
@@ -405,6 +400,12 @@ public class Javafx extends Application {
         settingsButton.setOnAction(settingsEvent);
         //------------------------------------------------
         
+		/////////////////////////////////////////			
+		// ===== FILE CHOOSER===== //
+		/////////////////////////////////////////
+		
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        musicDirectoryChange(directoryChooser, stage);
 	        
 			    	/////////////////////////////////////////			
 			    	// ===== SETTING TOP BAR ELEMETS ===== //
