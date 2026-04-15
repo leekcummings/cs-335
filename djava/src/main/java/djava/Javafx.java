@@ -3,6 +3,7 @@
 package djava;
 
 import java.awt.event.ActionListener;
+
 import java.io.File;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -49,6 +51,7 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.stage.DirectoryChooser;
 
 public class Javafx extends Application {
 	Slider slider;
@@ -61,11 +64,10 @@ public class Javafx extends Application {
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
 	TableView<Song> queue;
 	Slider volumeSlider;
-	static int queueIndex = 0;
+	int queueIndex = 0;
 	Duration lastDet = new Duration(2000);
 	ArrayList<Song> songs;
-	static Label songLabel;
-	
+	Label songLabel = new Label();
 	TableColumn<Song,String> title;
 	TableColumn<Song,Integer> track;
 	TableColumn<Song,String> album;
@@ -125,8 +127,8 @@ public class Javafx extends Application {
     	media = new Media(new File(song.getPath()).toURI().toString());
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
-    	//the way this info is and what's displayed can be changed just like this for now though
-    	songLabel.setText(queueList.get(queueIndex).getTitle() + " by " + queueList.get(queueIndex).getArtist() + " from " + queueList.get(queueIndex).getAlbum());
+    	songLabel = Label(queueList.get(queueIndex).getTitle());
+    	songLabel.setMinWidth(40);
     	
     }
     
@@ -299,11 +301,37 @@ public class Javafx extends Application {
     	grid.add(musicDirectory, 0, 1);
     	
     	Button musicDirButton = new Button("Change Music Directory");
+    	musicDirButton.setOnAction(event -> {musicDirectoryChange()});
     	grid.add(musicDirButton, 1, 1);
 
 		return grid;
     }
-    
+    public void musicDirectoryChange(Stage stage) {
+    	stage.setTitle("Directory Chooser");
+    	DirectoryChooser directoryChooser = new DirectoryChooser();
+    	Label directoryLabel = new Label("no files selected");
+    	Button button = new Button("Show");
+    	EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
+    		public void handle(ActionEvent e) {
+    			File file = directoryChooser.showDialog(stage);
+    			if (file != null) {
+    				directoryLabel.setText(file.getAbsolutePath() + "selected");
+    			} // closes file != null
+    		} // closes handle action event
+    	}; // closes event handler
+    	
+    	button.setOnAction(event);
+    	
+    	VBox vbox = new VBox(30, label, button);
+    	vbox.setAlignment(Pos.CENTER);
+    	Scene scene = new Scene(vbox, 800, 500);
+    	stage.setScene(scene);
+    	stage.show();
+    }
+    catch (Exception e) {
+    	System.out.println(e.getMessage());
+    }
+    }
     @Override
     public void start(Stage stage) {
     	
@@ -681,12 +709,6 @@ public class Javafx extends Application {
     	Label volumeLabel = new Label("Vol: ");
     	volumeLabel.setMinWidth(20);
     	
-    	
-    	songLabel = new Label();
-    	songLabel.setMinWidth(100);
-    	//makes the text wrap
-    	songLabel.setWrapText(true);
-    	
     	volumeSlider = new Slider();        
     	volumeSlider.setPrefWidth(100);
     	volumeSlider.setMaxWidth(130);
@@ -745,7 +767,6 @@ public class Javafx extends Application {
         queue.minWidth(2000);
         queue.maxWidth(2000);
         queue.prefWidth(2000);
-        playBar.setMinHeight(100);
         //tabPane.setTabMinHeight(28);
         
         //adding the elements to the borderpane, you have to do them
