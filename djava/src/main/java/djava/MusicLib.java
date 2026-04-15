@@ -35,12 +35,14 @@ public class MusicLib {
 			for (File file : dir.listFiles()) { //iterating through each file
 				if(file.isDirectory()) {directoryScan(file);}
 				else {
-					if(file.getAbsolutePath().matches(".*mp3") || file.getAbsolutePath().matches(".*wav")) { //this is just to make sure that we are only
-						if(ConfigManager.opSys == OS.UNIX && file.getAbsolutePath().matches(".*mp3")) {
-							continue;
-						} else {
-							mp3WavToJson(file);
-						}
+					if(file.getAbsolutePath().matches(".*mp3") ) { //this is just to make sure that we are only
+//						|| file.getAbsolutePath().matches(".*wav")
+//						if(ConfigManager.opSys == OS.UNIX && file.getAbsolutePath().matches(".*mp3")) {
+//							continue;
+//						} else {
+//							mp3WavToJson(file);
+//						}
+						mp3WavToJson(file);
 						//files.add(file.getAbsolutePath());		  //adding mp3s to the list, to get rid of unnecessary
 					}//headaches (again can be changed for flacs later)
 //					else if(file.getAbsolutePath().matches(".*flac")) {

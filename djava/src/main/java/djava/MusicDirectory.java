@@ -16,6 +16,7 @@ public class MusicDirectory {
 	
 	static void set(String newFileDirectoryPath) {
 		directory = newFileDirectoryPath;
+		
 	}
 	
 	static String get() {
