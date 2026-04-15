@@ -67,11 +67,12 @@ public class Javafx extends Application {
 	static int queueIndex = 0;
 	Duration lastDet = new Duration(2000);
 	ArrayList<Song> songs;
-	static Label songLabel = new Label();
+	Label songLabel = new Label();
 	TableColumn<Song,String> title;
 	TableColumn<Song,Integer> track;
 	TableColumn<Song,String> album;
 	TableColumn<Song,String> artist;
+	Stage filePickerStage;
 	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
@@ -127,8 +128,8 @@ public class Javafx extends Application {
     	media = new Media(new File(song.getPath()).toURI().toString());
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
-    	songLabel = new Label(queueList.get(queueIndex).getTitle());
-    	songLabel.setMinWidth(40);
+//    	songLabel = new Label(queueList.get(queueIndex).getTitle());
+//    	songLabel.setMinWidth(40);
     	
     }
     
@@ -328,10 +329,15 @@ public class Javafx extends Application {
     	
     	VBox vbox = new VBox(30, directoryLabel, button);
     	vbox.setAlignment(Pos.CENTER);
+    	Scene scene = new Scene(vbox, 500, 300);
+         
+        stage.setTitle("DJava Application (TEST)");
+        stage.setScene(scene);
+        stage.show();
     }
     
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primaryStage) throws Exception{
     	
 			    	///////////////////////			
 			    	// ===== PANES ===== //
@@ -381,10 +387,10 @@ public class Javafx extends Application {
         
         // Based on https://www.geeksforgeeks.org/java/javafx-popup-class/
         // create a popup
-        Popup popup = new Popup();
+        //Popup popup = new Popup();
         GridPane settingsGrid = createSettingsGrid();
         settingsGrid.getStyleClass().add("popup");
-        popup.getContent().add(settingsGrid);
+        //popup.getContent().add(settingsGrid);
  
         // action event
         EventHandler<ActionEvent> settingsEvent = 
@@ -392,10 +398,10 @@ public class Javafx extends Application {
  
             public void handle(ActionEvent e)
             {
-                if (!popup.isShowing()) {
-                    popup.show(stage);
+                if (!filePickerStage.isShowing()) {
+                    filePickerStage.show();
                 } else {
-                    popup.hide();}
+                	filePickerStage.hide();}
             }
         };
  
@@ -403,12 +409,49 @@ public class Javafx extends Application {
         settingsButton.setOnAction(settingsEvent);
         //------------------------------------------------
         
-		/////////////////////////////////////////			
+		//////////////////////////////		
 		// ===== FILE CHOOSER===== //
-		/////////////////////////////////////////
+		/////////////////////////////
 		
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        musicDirectoryChange(directoryChooser, stage);
+        filePickerStage = new Stage();
+        Label directoryLabel = new Label("no files selected");
+    	Button dirButton = new Button("Change Directory");
+    	Button refButton = new Button("Refresh Music Library");
+    	//EventHandler<ActionEvent> event = new EventHandler<ActionEvent>(
+    	//		); // closes event handler 
+    	
+    	dirButton.setOnAction(event -> {
+    			directoryChooser.setTitle("Open Resource File");
+    			File file = directoryChooser.showDialog(filePickerStage);
+    			if(file != null) {
+    				directoryLabel.setText(file.toString());
+    			}
+    			MusicLib.loadLibrary();
+    			//File file = directoryChooser.showDialog();
+    			//if (file != null) {
+    				//directoryLabel.setText(file.getAbsolutePath() + "selected");
+    			 // closes file != null
+    		// closes handle action event
+    	});
+    	
+    	refButton.setOnAction(event -> {
+			MusicLib.loadLibrary();
+			//File file = directoryChooser.showDialog();
+			//if (file != null) {
+				//directoryLabel.setText(file.getAbsolutePath() + "selected");
+			 // closes file != null
+		// closes handle action event
+	});
+    	
+    	VBox vbox = new VBox(30, directoryLabel, dirButton, refButton);
+    	vbox.setAlignment(Pos.CENTER);
+    	Scene fScene = new Scene(vbox, 500, 300);
+         
+    	filePickerStage.setTitle("DJava Application (TEST)");
+    	filePickerStage.setScene(fScene);
+    	//filePickerStage.show();
+        //musicDirectoryChange(directoryChooser, filePickerStage);
 	        
 			    	/////////////////////////////////////////			
 			    	// ===== SETTING TOP BAR ELEMETS ===== //
@@ -784,9 +827,9 @@ public class Javafx extends Application {
         //Scene scene = new Scene(mainWindow, 800, 600);
         Scene scene = new Scene(border, 800, 600);
         
-        stage.setTitle("DJava Application (TEST)");
-        stage.setScene(scene);
-        stage.show();
+        primaryStage.setTitle("DJava Application (TEST)");
+        primaryStage.setScene(scene);
+        primaryStage.show();
         searchBar.setPrefWidth(topBarWidth - helpButton.getWidth() - settingsButton.getWidth());
         scene.getStylesheets().add(getClass().getResource("default.css").toExternalForm());
     
