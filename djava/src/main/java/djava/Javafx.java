@@ -392,10 +392,10 @@ public class Javafx extends Application {
  
             public void handle(ActionEvent e)
             {
-                if (!popup.isShowing())
+                if (!popup.isShowing()) {
                     popup.show(stage);
-                else
-                    popup.hide();
+                } else {
+                    popup.hide();}
             }
         };
  
