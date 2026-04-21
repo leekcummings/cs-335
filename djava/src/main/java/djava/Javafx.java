@@ -54,7 +54,6 @@ import javafx.util.Duration;
 import javafx.stage.DirectoryChooser;
 
 public class Javafx extends Application {
-	Slider slider;
 	Time time;
 	Duration duration;
 	static MediaPlayer mediaPlayer;
@@ -77,6 +76,10 @@ public class Javafx extends Application {
 	TextField searchBar;    	
     ComboBox comboBox;
     FilteredList<Song> filteredData;
+    static Label currentSongInfo;
+    static Slider musicSlider;
+    static Label currentDuration;
+    static Label maxDuration;
 	
 	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
 	// THIS IS A DEFAULT VALUE FOR TESTING
@@ -128,6 +131,8 @@ public class Javafx extends Application {
     }
 
     public static void playSong(Song song) {
+    	// Update playbar label
+    	updateCurrentDisplayedSong(song);
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
     	mediaPlayer = new MediaPlayer(media);
@@ -135,6 +140,31 @@ public class Javafx extends Application {
 //    	songLabel = new Label(queueList.get(queueIndex).getTitle());
 //    	songLabel.setMinWidth(40);
     	
+    }
+    
+    // UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
+    public static void updateCurrentDisplayedSong(Song song) {
+    	// Get title and artist
+    	String title = song.getTitle();
+    	String artist = song.getArtist();
+    	String formattedInfo = title + " - " + artist;
+    	// Update the current info
+    	currentSongInfo.setText(formattedInfo);
+    	// Slider stuff
+    	musicSlider.setMin(0.0);
+    	// Get duration of song as string
+    	String durationString = media.getDuration().toString();
+    	// Convert to float using this BS
+    	float convertedDuration = Float.parseFloat(durationString.substring(0, durationString.length() - 3));
+    	System.out.println(convertedDuration);
+    	// Set max to that
+    	musicSlider.setMax(convertedDuration);
+    	// Set current value to beginning
+    	musicSlider.setValue(0.0);
+    	// Update duration of song in GUI
+    	int minutes = (int) media.getDuration().toMinutes();
+    	int seconds = (int) media.getDuration().toSeconds() % 60;
+    	maxDuration.setText(minutes + ":" + seconds);
     }
     
     public void clearQueue() {
@@ -701,7 +731,7 @@ public class Javafx extends Application {
 				//////////////////////////
         //all of the stuff below is for the play bar
         HBox playBar = new HBox();
-        int playBarWidth = 400;
+        int playBarWidth = 1000;
     	playBar.setMaxWidth(playBarWidth);
     	playBar.autosize();
     	
@@ -737,7 +767,6 @@ public class Javafx extends Application {
     	
     	//=======================================
     	
-    	
     	//this is going to change, jsut temp for playing music n testing
         String path = "660452__seth_makes_sounds__free-commercial-song.wav";
         media = new Media(new File(path).toURI().toString());
@@ -746,14 +775,24 @@ public class Javafx extends Application {
         mediaPlayer.setOnEndOfMedia( () -> {playNext();});
         //music plays on default, this is temp n for testing
         //mediaPlayer.setAutoPlay(true);
+        currentDuration = new Label("0:00");
+        maxDuration = new Label("0:00");
         //slider
-        slider = new Slider();
-        HBox.setHgrow(slider, Priority.ALWAYS);
-        slider.setMinSize(300, 50);
+        musicSlider = new Slider();
+        HBox.setHgrow(musicSlider, Priority.ALWAYS);
+        musicSlider.setMinSize(300, 50);
+        // Song Title/Artist Name
+        currentSongInfo = new Label("No Song Playing");
+        // Layout for song playback
+        VBox songPlaybackLayout = new VBox();
+        songPlaybackLayout.getChildren().addAll(currentSongInfo, musicSlider);
+        songPlaybackLayout.setAlignment(Pos.TOP_CENTER);
+
         //button actions (PLAY N PAUSE)
         //idk if the mediaview there is necessary
-        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,slider,nextButton,volumeLabel,volumeSlider,clearQueueButton);
+        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton);
         playBar.getStyleClass().add("buttonBar");
+        playBar.setAlignment(Pos.CENTER);
         
 //        volumeSlider.valueProperty().addListener(new InvalidationListener() {
 //    	    public void invalidated(Observable ov) {
