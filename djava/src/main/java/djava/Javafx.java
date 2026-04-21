@@ -131,10 +131,10 @@ public class Javafx extends Application {
     }
 
     public static void playSong(Song song) {
-    	// Update playbar label
-    	updateCurrentDisplayedSong(song);
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
+    	// Update playbar label
+    	updateCurrentDisplayedSong(song);
     	mediaPlayer = new MediaPlayer(media);
     	mediaPlayer.play();
 //    	songLabel = new Label(queueList.get(queueIndex).getTitle());
@@ -156,7 +156,6 @@ public class Javafx extends Application {
     	String durationString = media.getDuration().toString();
     	// Convert to float using this BS
     	float convertedDuration = Float.parseFloat(durationString.substring(0, durationString.length() - 3));
-    	System.out.println(convertedDuration);
     	// Set max to that
     	musicSlider.setMax(convertedDuration);
     	// Set current value to beginning
