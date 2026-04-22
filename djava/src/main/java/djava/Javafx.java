@@ -703,7 +703,7 @@ public class Javafx extends Application {
         border.setTop(topBar);
         
         //Scene scene = new Scene(mainWindow, 800, 600);
-        Scene scene = new Scene(border, 800, 600);
+        Scene scene = new Scene(border, 1200, 900);
         
         primaryStage.setTitle("DJava Application (TEST)");
         primaryStage.setScene(scene);
