@@ -2,14 +2,11 @@
 
 package djava;
 
-import java.awt.event.ActionListener;
 
 import java.io.File;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javafx.application.Application;
@@ -25,31 +22,23 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.stage.DirectoryChooser;
 
@@ -58,14 +47,12 @@ public class Javafx extends Application {
 	Duration duration;
 	static MediaPlayer mediaPlayer;
 	static Media media;
+	static TableView<Song> queue;
 	MediaView mediaView;
-	static ArrayList<Song> queueList = new ArrayList<>();
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
-	TableView<Song> queue;
 	Slider volumeSlider;
-	static int queueIndex = 0;
-	Duration lastDet = new Duration(2000);
-	ArrayList<Song> songs;
+	static Duration lastDet = new Duration(2000);
+	static ArrayList<Song> songs;
 	Label songLabel = new Label();
 	TableColumn<Song,String> title;
 	TableColumn<Song,Integer> track;
@@ -74,76 +61,29 @@ public class Javafx extends Application {
 	Stage filePickerStage;
 	TableView<Song> tableView;
 	TextField searchBar;    	
-    ComboBox comboBox;
+    ComboBox<String> comboBox;
     FilteredList<Song> filteredData;
     static Label currentSongInfo;
     static Slider musicSlider;
     static Label currentDuration;
     static Label maxDuration;
 	
-	// !!! CHANGE THIS VALUE TO BE A PART OF CONFIG FILE
-	// THIS IS A DEFAULT VALUE FOR TESTING
-	// This HashMap links the name of the column to the Song attribute
-	// It is linked because it's also in order of priority
-	static LinkedHashMap<String, String> songColNamesPriority = new LinkedHashMap<>(
-			Map.of("Artist", "artist",
-			"Album", "album",
-			"#", "track",
-			"Title", "title"));
-	
     public static void main(String[] args) {
         launch(args);
     }
-    
-    /////////////////////////////////
-    //==== QUEUE FUNCTIONALITY ====//
-    /////////////////////////////////
    
-    public void addToBack(Song song) {
-    	if(queueList.size() == 0) {
-    		playSong(song);
-    	}
-    	queueList.add(song);
-    	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
-    	
-    }
-    
-    public void addToFront(Song song) {
-    	if(queueList.size() > 0) {
-    		queueList.add(queueIndex+1,song);
-    	}else {
-    		queueList.add(queueIndex,song);
-    		playSong(song);
-    	}
-    	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
-    }
-    
-    public void addManyToBack(ArrayList<Song> list) {
-    	for(Song song: list) {
-    		addToBack(song);
-    	}
-    }
-    
-    public void addManyToNext(ArrayList<Song> list) {
-    	for(int i = 0; i<list.size();i++) {
-    		addToFront(list.get(list.size()-1-i));
-    	}
-    }
-
+    /// PLAY SONG WITH MEDIA PLAYER
     public static void playSong(Song song) {
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
     	// Update playbar label
-    	updateCurrentDisplayedSong(song);
+    	updatePlayBarText(song);
     	mediaPlayer = new MediaPlayer(media);
-    	mediaPlayer.play();
-//    	songLabel = new Label(queueList.get(queueIndex).getTitle());
-//    	songLabel.setMinWidth(40);
-    	
+    	mediaPlayer.play();    	
     }
     
-    // UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
-    public static void updateCurrentDisplayedSong(Song song) {
+    /// UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
+    public static void updatePlayBarText(Song song) {
     	// Get title and artist
     	String title = song.getTitle();
     	String artist = song.getArtist();
@@ -165,126 +105,15 @@ public class Javafx extends Application {
     	int seconds = (int) media.getDuration().toSeconds() % 60;
     	maxDuration.setText(minutes + ":" + seconds);
     }
-    
-    public void clearQueue() {
-    	queueList.clear();
-    	queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
-    	queueIndex = 0;
-    }
 
 		////////////////////////////////////////
 		//==== MUSIC PLAYER FUNCTIONALITY ====//
 		////////////////////////////////////////
-	
-    public void playNext() {
-    	if(queueIndex+1 > queueList.size()){
-    		System.out.println("Out of range of queue" + queueList.size());
-    	} else {
-    		queueIndex++;
-    		playSong(queueList.get(queueIndex));
-    	}
-    }
-    
-    public void playLast() {
-    	if(mediaPlayer.getCurrentTime().lessThan(lastDet)) {
-    		if(queueIndex-1 < 0){
-        		System.out.println("Out of range of queue");
-        	} else {
-        		queueIndex--;
-        		playSong(queueList.get(queueIndex));
-        	}
-    	} else {
-    		playSong(queueList.get(queueIndex));
-    	}
-    }
-    
-    public ArrayList<Song> albumAdding(Song song) {
-    	String lowerCaseFilter = song.getAlbum().toLowerCase();
-    	FilteredList<Song> filteredData = new FilteredList<Song>(FXCollections.observableArrayList(songs), p -> {
-    		// If filter text is empty, display all persons.
-    		// Compare first name and last name of every person with filter text.
-    		//checks all relivant fields
-    		if (p.getAlbum().toLowerCase().contains(lowerCaseFilter)) {
-    			return true;
-    			}return false; // Does not match.
-    	});
-		
-		ArrayList<Song> sortedData = new ArrayList<>();
-		for(Song s:filteredData) {
-			if(sortedData.size() == 0) {
-				sortedData.add(s);
-			}
-			for(Song data: sortedData) {
-				if (s.getTrack() <= data.getTrack()) {
-					sortedData.add(sortedData.indexOf(data), s);
-					break;
-				} else if (s.getTrack() >= data.getTrack() && sortedData.indexOf(data) == sortedData.size()-1) {
-					sortedData.add(s);
-					break;
-				}
-			}
-		}
-		//System.out.println(sortedData);
-		return(sortedData);
-		
-    }
-    
-    public void album(Song song){
-    	addManyToBack(albumAdding(song));
-    }
-    
-    public void albumNext(Song song) {
-		addManyToNext(albumAdding(song));
-    }
-    
-    public ArrayList<Song> artistAdding(Song song) {
-    	String lowerCaseFilter = song.getArtist().toLowerCase();
-    	FilteredList<Song> filteredData = new FilteredList<Song>(FXCollections.observableArrayList(songs), p -> {
-    		// If filter text is empty, display all persons.
-    		// Compare first name and last name of every person with filter text.
-    		//checks all relivant fields
-    		if (p.getArtist().toLowerCase().contains(lowerCaseFilter)) {
-    			return true;
-    			}return false; // Does not match.
-    	});
-		
-		ArrayList<Song> sortedData = new ArrayList<>();
-		for(Song s:filteredData) {
-			if(sortedData.size() == 0) {
-				sortedData.add(s);
-			}
-			for(Song data: sortedData) {
-				if(s.getAlbum().compareTo(data.getAlbum()) == 0){
-					if (s.getTrack() <= data.getTrack() ) {
-						sortedData.add(sortedData.indexOf(data), s);
-						break;
-					}
-				}
-				else if(s.getAlbum().compareTo(data.getAlbum()) < 0) {
-					sortedData.add(sortedData.indexOf(data), s);
-					break;
-				} else if (s.getAlbum().compareTo(data.getAlbum()) > 0 && s.getTrack() >= data.getTrack() && sortedData.indexOf(data) == sortedData.size()-1) {
-					sortedData.add(s);
-					break;
-				}
-			}
-		}
-		return(sortedData);
-    }
-    
-    public void artist(Song song) {
-    	addManyToBack(artistAdding(song));
-    }
-    
-    public void artistNext(Song song) {
-    	addManyToNext(artistAdding(song));
-    }
-    
-    
-    public void setSongs() {
+    @SuppressWarnings("unchecked")
+	public void setSongs() {
     	songs.clear();
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
-    		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
+    		LinkedHashMap<String, String> song = (LinkedHashMap<String, String>) i.getValue();
     		// Extract song name, title, artist from HashMap
     		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));  
     	}
@@ -303,13 +132,6 @@ public class Javafx extends Application {
     	//https://www.youtube.com/watch?v=1wxygyOGtlc
     	// Prevent user from closing tabs
         
-    }
-    
-    
-    public static Tab createTab(String title, TableView<Song> table) {
-    	Tab tab = new Tab(title);
-    	tab.setContent(table);
-    	return tab;
     }
     
     public static GridPane createSettingsGrid() {
@@ -378,7 +200,6 @@ public class Javafx extends Application {
 			    	////////////////////////////			
 			    	// ===== SEARCH BAR ===== //
 			    	////////////////////////////
-    	// Search bar (Doesn't work right now)
     	searchBar = new TextField();    	
         searchBar.setPromptText("Search...");
 
@@ -613,14 +434,14 @@ public class Javafx extends Application {
         addToQueue.setOnAction(e -> {
         	for(TableView<Song> table: tables) {
         		if(table.getSelectionModel().getSelectedItem()!= null) {
-        		addToBack(table.getSelectionModel().getSelectedItem());}
+        		MediaManager.addToBack(table.getSelectionModel().getSelectedItem());}
         	}
         });
         
         playNext.setOnAction(e -> {
         	for(TableView<Song> table: tables) {
         		if(table.getSelectionModel().getSelectedItem()!= null) {
-        		addToFront(table.getSelectionModel().getSelectedItem());}
+        		MediaManager.addToFront(table.getSelectionModel().getSelectedItem());}
         	}
         });
         
@@ -629,8 +450,8 @@ public class Javafx extends Application {
         		System.out.print(table.getSelectionModel().getSelectedItem());
         		if(table.getSelectionModel().getSelectedItem()!= null) {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
-        			clearQueue();
-        			addToFront(table.getSelectionModel().getSelectedItem());
+        			MediaManager.clearQueue();
+        			MediaManager.addToFront(table.getSelectionModel().getSelectedItem());
         			playSong(table.getSelectionModel().getSelectedItem());
         		}
         	}
@@ -641,7 +462,7 @@ public class Javafx extends Application {
         		System.out.print(table.getSelectionModel().getSelectedItem());
         		if(table.getSelectionModel().getSelectedItem()!= null) {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
-        			album(table.getSelectionModel().getSelectedItem());
+        			MediaManager.album(table.getSelectionModel().getSelectedItem());
         		}
         	}
         });
@@ -651,7 +472,7 @@ public class Javafx extends Application {
         		System.out.print(table.getSelectionModel().getSelectedItem());
         		if(table.getSelectionModel().getSelectedItem()!= null) {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
-        			albumNext(table.getSelectionModel().getSelectedItem());
+        			MediaManager.albumNext(table.getSelectionModel().getSelectedItem());
         		}
         	}
         });
@@ -661,7 +482,7 @@ public class Javafx extends Application {
         		System.out.print(table.getSelectionModel().getSelectedItem());
         		if(table.getSelectionModel().getSelectedItem()!= null) {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
-        			artist(table.getSelectionModel().getSelectedItem());
+        			MediaManager.artist(table.getSelectionModel().getSelectedItem());
         		}
         		
         	}
@@ -672,7 +493,7 @@ public class Javafx extends Application {
         		System.out.print(table.getSelectionModel().getSelectedItem());
         		if(table.getSelectionModel().getSelectedItem()!= null) {
         			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
-        			artistNext(table.getSelectionModel().getSelectedItem());
+        			MediaManager.artistNext(table.getSelectionModel().getSelectedItem());
         		}
         	}
         });
@@ -691,8 +512,8 @@ public class Javafx extends Application {
         	table.setOnMouseClicked(event ->{
         		if(event.getClickCount() == 2)  {
         			//basically start playing the song
-        			clearQueue();
-        			addToFront(table.getSelectionModel().getSelectedItem());
+        			MediaManager.clearQueue();
+        			MediaManager.addToFront(table.getSelectionModel().getSelectedItem());
         			playSong(table.getSelectionModel().getSelectedItem());	
         		}
         	});
@@ -703,8 +524,8 @@ public class Javafx extends Application {
 				///////////////////////
 				// ===== QUEUE ===== //
 				///////////////////////
-        ObservableList<Song> data = (ObservableList<Song>) FXCollections.observableArrayList(queueList);
-        System.out.println(queueList);
+        ObservableList<Song> data = (ObservableList<Song>) FXCollections.observableArrayList(MediaManager.queueList);
+        System.out.println(MediaManager.queueList);
         queue = new TableView<>();
         queue.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         TableColumn<Song, String> nameColumn = new TableColumn("Title");
@@ -742,11 +563,11 @@ public class Javafx extends Application {
     	Button clearQueueButton = new Button("Clear Queue");
 
     	
-    	clearQueueButton.setOnAction(event -> {clearQueue();});
+    	clearQueueButton.setOnAction(event -> {MediaManager.clearQueue();});
     	playButton.setOnAction(event -> {mediaPlayer.play();});
         pauseButton.setOnAction(event -> {mediaPlayer.pause();});
-        nextButton.setOnAction(event -> {playNext();});
-        lastButton.setOnAction(event -> {playLast();});
+        nextButton.setOnAction(event -> {MediaManager.playNext();});
+        lastButton.setOnAction(event -> {MediaManager.playLast();});
 
     	playButton.setMinWidth(50);
     	pauseButton.setMinWidth(50);
@@ -771,7 +592,7 @@ public class Javafx extends Application {
         media = new Media(new File(path).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         //look into this!!!!!!!!!!!!!!!
-        mediaPlayer.setOnEndOfMedia( () -> {playNext();});
+        mediaPlayer.setOnEndOfMedia( () -> {MediaManager.playNext();});
         //music plays on default, this is temp n for testing
         //mediaPlayer.setAutoPlay(true);
         currentDuration = new Label("0:00");

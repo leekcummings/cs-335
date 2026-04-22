@@ -43,11 +43,13 @@
 .text-field, .tab {
 	-fx-background-color: linear-gradient(to top,rgba(204, 204, 204, 1) 26%, rgba(232, 232, 232, 1) 48%, rgba(255, 255, 255, 1) 100%);
 	-fx-border-color: #bbb #bbb #aaa #bbb;
+	-fx-text-fill: black;
 }
 
 .text-field:hover, .tab:hover {
 	-fx-background-color: linear-gradient(to top,rgba(224, 224, 224, 1) 26%, rgba(252, 252, 252, 1) 48%, rgba(255, 255, 255, 1) 100%);
 	-fx-border-color: #ccc #ccc #bbb #ccc;
+	-fx-text-fill: black;
 }
 
 .tab {
