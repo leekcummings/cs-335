@@ -577,7 +577,7 @@ public class Javafx extends Application {
         queue.setMinWidth(300);
         queue.setMaxWidth(600);
         queue.setPrefWidth(450);
-
+        
 
 				//////////////////////////		
 				// ===== PLAY BAR ===== //
@@ -594,9 +594,11 @@ public class Javafx extends Application {
     	Button nextButton = new Button(">>");
     	Button lastButton = new Button("<<");
     	Button clearQueueButton = new Button("Clear Queue");
+    	Button shuffleQueueButton = new Button("Shuffle Queue");
 
     	
     	clearQueueButton.setOnAction(event -> {MediaManager.clearQueue();});
+    	shuffleQueueButton.setOnAction(event -> {MediaManager.shuffleQueue();});
     	playButton.setOnAction(event -> {mediaPlayer.play();});
         pauseButton.setOnAction(event -> {mediaPlayer.pause();});
         nextButton.setOnAction(event -> {MediaManager.playNext();});
@@ -607,6 +609,7 @@ public class Javafx extends Application {
     	nextButton.setMinWidth(35);
     	lastButton.setMinWidth(35);
     	clearQueueButton.setMinWidth(80);
+    	shuffleQueueButton.setMinWidth(90);
     	
     	
     	Label volumeLabel = new Label("Vol: ");
@@ -644,7 +647,7 @@ public class Javafx extends Application {
 
         //button actions (PLAY N PAUSE)
         //idk if the mediaview there is necessary
-        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton);
+        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton, shuffleQueueButton);
         playBar.getStyleClass().add("buttonBar");
         playBar.setAlignment(Pos.CENTER);
      

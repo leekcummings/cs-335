@@ -163,7 +163,7 @@ public class MediaManager {
     	queueIndex = 0;
     }
     
-    public static void shuffleQueue(ArrayList<Song> queueList) {
+    public static void shuffleQueue() {
     	//ArrayList<Song> shuffleQueue = new ArrayList<>();
     	Song currentSong = queueList.get(queueIndex);
     	queueList.remove(queueIndex);
@@ -172,6 +172,8 @@ public class MediaManager {
     	queueList.add(0, currentSong);
     	
     	queueIndex = 0;
+    	Javafx.queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    	
     	
     }
 }
