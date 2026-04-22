@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import java.util.Collections;
 
 public class MediaManager {
 	static ArrayList<Song> queueList = new ArrayList<>();
@@ -160,5 +161,17 @@ public class MediaManager {
     	queueList.clear();
     	Javafx.queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
     	queueIndex = 0;
+    }
+    
+    public static void shuffleQueue(ArrayList<Song> queueList) {
+    	//ArrayList<Song> shuffleQueue = new ArrayList<>();
+    	Song currentSong = queueList.get(queueIndex);
+    	queueList.remove(queueIndex);
+    	//shuffleQueue = shuffleQueue.shuffle();
+    	Collections.shuffle(queueList);
+    	queueList.add(0, currentSong);
+    	
+    	queueIndex = 0;
+    	
     }
 }
