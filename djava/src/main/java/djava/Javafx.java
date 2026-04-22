@@ -4,11 +4,20 @@ package djava;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,6 +46,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -67,6 +77,7 @@ public class Javafx extends Application {
     static Slider musicSlider;
     static Label currentDuration;
     static Label maxDuration;
+    static Song currentSong;
 	
     public static void main(String[] args) {
         launch(args);
@@ -84,6 +95,7 @@ public class Javafx extends Application {
     
     /// UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
     public static void updatePlayBarText(Song song) {
+    	currentSong = song;
     	// Get title and artist
     	String title = song.getTitle();
     	String artist = song.getArtist();
@@ -106,6 +118,17 @@ public class Javafx extends Application {
     	maxDuration.setText(minutes + ":" + seconds);
     }
 
+    public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
+      if (mediaPlayer.getStatus() == Status.PLAYING) {
+		   File file = new File(currentSong.getPath());
+		   AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+		   AudioFormat format = audioInputStream.getFormat();
+		   long frames = audioInputStream.getFrameLength();
+		   double durationInSeconds = ((frames + 0.0) / format.getFrameRate());
+		   currentDuration.setText(String.valueOf(durationInSeconds));
+	  }
+
+    }
 		////////////////////////////////////////
 		//==== MUSIC PLAYER FUNCTIONALITY ====//
 		////////////////////////////////////////
@@ -613,6 +636,21 @@ public class Javafx extends Application {
         playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton);
         playBar.getStyleClass().add("buttonBar");
         playBar.setAlignment(Pos.CENTER);
+     
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), event -> {
+                	try {
+						updateCurrentDuration();
+					} catch (UnsupportedAudioFileException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+                })
+        );
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    	
+        
         
 //        volumeSlider.valueProperty().addListener(new InvalidationListener() {
 //    	    public void invalidated(Observable ov) {
