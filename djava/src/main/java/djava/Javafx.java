@@ -146,6 +146,10 @@ public class Javafx extends Application {
     	currentSongInfo.setText(formattedInfo);
     	// Slider stuff
     	musicSlider.setMin(0.0);    
+    	// Remove previously highlighted cells
+    	queue.getSelectionModel().getSelectedCells().clear();
+    	// Select current song as selected
+    	queue.getSelectionModel().select(MediaManager.queueIndex);
     }
 
     public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
