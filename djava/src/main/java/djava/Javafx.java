@@ -3,6 +3,7 @@
 package djava;
 
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
@@ -14,11 +15,15 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -36,6 +41,9 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -61,7 +69,7 @@ public class Javafx extends Application {
 	MediaView mediaView;
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
 	Slider volumeSlider;
-	static Duration lastDet = new Duration(2000);
+	static Duration lastDet = new Duration(2000000);
 	static ArrayList<Song> songs;
 	Label songLabel = new Label();
 	TableColumn<Song,String> title;
@@ -78,6 +86,10 @@ public class Javafx extends Application {
     static Label currentDuration;
     static Label maxDuration;
     static Song currentSong;
+    static //static ImageIcon imageIcon = null;
+    Image image;
+    static ImageView imageView;
+
 	
     public static void main(String[] args) {
         launch(args);
@@ -88,14 +100,44 @@ public class Javafx extends Application {
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
     	// Update playbar label
-    	updatePlayBarText(song);
     	mediaPlayer = new MediaPlayer(media);
-    	mediaPlayer.play();    	
+    	mediaPlayer.setOnReady(new Runnable() {
+
+	         @Override
+	         public void run() {
+
+	             System.out.println("Duration: "+media.getDuration().toSeconds());
+	             
+	             musicSlider.setMin(0.0);
+	             // Get duration of song as string
+	             String durationString = media.getDuration().toString();
+	             // Convert to float using this BS
+	             float convertedDuration = Float.parseFloat(durationString.substring(0, durationString.length() - 3));
+	             // Set max to that
+	             musicSlider.setMax(convertedDuration);
+	             // Set current value to beginning
+	             musicSlider.setValue(0.0);
+	             // Update duration of song in GUI
+
+	             int minutes = (int) media.getDuration().toMinutes();
+	    	     int seconds = (int) media.getDuration().toSeconds() % 60;
+	    	     System.out.println(minutes + ":" + seconds);
+	    	     maxDuration.setText(minutes + ":" + seconds);
+
+	             // play if you want
+	             mediaPlayer.play();
+	         }
+	     });
+    	updatePlayBarText(song);
     }
     
     /// UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
     public static void updatePlayBarText(Song song) {
     	currentSong = song;
+    	//doesn't work lmfao
+//    	image = new Image(song.getCoverArt());
+//    	imageView = new ImageView(image);
+    	
     	// Get title and artist
     	String title = song.getTitle();
     	String artist = song.getArtist();
@@ -103,24 +145,7 @@ public class Javafx extends Application {
     	// Update the current info
     	currentSongInfo.setText(formattedInfo);
     	// Slider stuff
-    	musicSlider.setMin(0.0);
-    	// Based on this: https://stackoverflow.com/questions/3046669/how-do-i-get-a-mp3-files-total-time-in-java
-    	File file = new File(currentSong.getPath());
-	    AudioInputStream audioInputStream = null;
-		try {
-			audioInputStream = AudioSystem.getAudioInputStream(file);
-		} catch (UnsupportedAudioFileException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    AudioFormat format = audioInputStream.getFormat();
-	    long frames = audioInputStream.getFrameLength();
-	    // Get duration as double, then set label+max
-	    int durationInSeconds = (int) ((frames + 0.0) / format.getFrameRate());
-	    maxDuration.setText(String.valueOf(durationInSeconds));
-	    musicSlider.setMax(durationInSeconds);
-	    //  Set current value to beginning
-	    musicSlider.setValue(0.0);
+    	musicSlider.setMin(0.0);    
     }
 
     public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
@@ -148,7 +173,7 @@ public class Javafx extends Application {
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
     		LinkedHashMap<String, String> song = (LinkedHashMap<String, String>) i.getValue();
     		// Extract song name, title, artist from HashMap
-    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));  
+    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath"),song.get("coverArt")));  
     	}
     	// Turn the song array into an ObservableList (basically an array, but for Tables)
     	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
@@ -349,7 +374,7 @@ public class Javafx extends Application {
     	for (Entry<String, Object> i : JsonManager.songMap.entrySet()) {
     		LinkedHashMap<String, String> song = (LinkedHashMap) i.getValue();
     		// Extract song name, title, artist from HashMap
-    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath")));  
+    		songs.add(new Song(i.getKey(), song.get("albumTitle"), song.get("trackNumber"), song.get("artistName"), song.get("filePath"), song.get("coverArt")));  
     	}
     	// Turn the song array into an ObservableList (basically an array, but for Tables)
     	ObservableList<Song> rows = FXCollections.observableArrayList(songs);
@@ -635,11 +660,19 @@ public class Javafx extends Application {
         currentDuration = new Label("0:00");
         maxDuration = new Label("0:00");
         //slider
+        
         musicSlider = new Slider();
+        
         HBox.setHgrow(musicSlider, Priority.ALWAYS);
         musicSlider.setMinSize(300, 50);
         // Song Title/Artist Name
         currentSongInfo = new Label("No Song Playing");
+      //https://github.com/mca-net/mp3-file-image-editor/blob/main/src/mp3-image-editor.java
+        image = new Image("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwiki.theplaz.com%2Fw%2Fimages%2FWindows_Media_Player_11_Default_Album_Art.jpg&f=1&nofb=1&ipt=8deeb4603d19794fe2904964d2f06974d22f01b6199e86b8a297d1ae2f3e6a0e");
+        imageView = new ImageView(image);
+        imageView.minWidth(200);
+        
+        
         // Layout for song playback
         VBox songPlaybackLayout = new VBox();
         songPlaybackLayout.getChildren().addAll(currentSongInfo, musicSlider);
@@ -647,7 +680,7 @@ public class Javafx extends Application {
 
         //button actions (PLAY N PAUSE)
         //idk if the mediaview there is necessary
-        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton, shuffleQueueButton);
+        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,imageView,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton, shuffleQueueButton);
         playBar.getStyleClass().add("buttonBar");
         playBar.setAlignment(Pos.CENTER);
      

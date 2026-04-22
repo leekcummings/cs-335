@@ -88,8 +88,10 @@ public class MusicLib {
 				String album = tag.getFirst(FieldKey.ALBUM);
 				String artist = tag.getFirst(FieldKey.ARTIST);
 				String track = tag.getFirst(FieldKey.TRACK);
+				String coverArt = tag.getFirst(FieldKey.COVER_ART);
+//				System.out.println(coverArt);
 				String filePath = file.getAbsolutePath();
-				JsonManager.newMapElement(song,album,artist,track,filePath);
+				JsonManager.newMapElement(song,album,artist,track,filePath,coverArt);
 			}
 			else {
 				System.out.println("Tag is null for file: " + file);
@@ -112,8 +114,9 @@ public class MusicLib {
 				String album = tag.getFirst(FieldKey.ALBUM);
 				String artist = tag.getFirst(FieldKey.ARTIST);
 				String track = tag.getFirst(FieldKey.TRACK);
+				String coverArt = tag.getFirst(FieldKey.COVER_ART);
 				String filePath = file.getAbsolutePath();
-				JsonManager.newMapElement(song,album,artist,track,filePath);
+				JsonManager.newMapElement(song,album,artist,track,filePath,coverArt);
 			}
 			else {
 				System.out.println("Tag is null for file: " + file);

@@ -8,8 +8,9 @@ public class Song {
 	private int track;
 	private String artist;
 	private String path;
+	private String coverArt;
 	
-	public Song (String ti, String al, String tr, String ar, String p) {
+	public Song (String ti, String al, String tr, String ar, String p, String c) {
 		this.title = ti;
 		this.album = al;
 		try {
@@ -20,6 +21,7 @@ public class Song {
 		}
 		this.artist = ar;
 		this.path = p;
+		this.coverArt = c;
 	}
 	
 	// Get functions
@@ -37,5 +39,9 @@ public class Song {
 	}
 	public String getPath() {
 		return this.path;
+	}
+	
+	public String getCoverArt() {
+		return this.coverArt;
 	}
 }
