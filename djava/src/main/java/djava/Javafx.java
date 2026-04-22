@@ -104,30 +104,40 @@ public class Javafx extends Application {
     	currentSongInfo.setText(formattedInfo);
     	// Slider stuff
     	musicSlider.setMin(0.0);
-    	// Get duration of song as string
-    	String durationString = media.getDuration().toString();
-    	// Convert to float using this BS
-    	float convertedDuration = Float.parseFloat(durationString.substring(0, durationString.length() - 3));
-    	// Set max to that
-    	musicSlider.setMax(convertedDuration);
-    	// Set current value to beginning
-    	musicSlider.setValue(0.0);
-    	// Update duration of song in GUI
-    	int minutes = (int) media.getDuration().toMinutes();
-    	int seconds = (int) media.getDuration().toSeconds() % 60;
-    	maxDuration.setText(minutes + ":" + seconds);
+    	// Based on this: https://stackoverflow.com/questions/3046669/how-do-i-get-a-mp3-files-total-time-in-java
+    	File file = new File(currentSong.getPath());
+	    AudioInputStream audioInputStream = null;
+		try {
+			audioInputStream = AudioSystem.getAudioInputStream(file);
+		} catch (UnsupportedAudioFileException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    AudioFormat format = audioInputStream.getFormat();
+	    long frames = audioInputStream.getFrameLength();
+	    // Get duration as double, then set label+max
+	    int durationInSeconds = (int) ((frames + 0.0) / format.getFrameRate());
+	    maxDuration.setText(String.valueOf(durationInSeconds));
+	    musicSlider.setMax(durationInSeconds);
+	    //  Set current value to beginning
+	    musicSlider.setValue(0.0);
     }
 
     public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
       if (mediaPlayer.getStatus() == Status.PLAYING) {
-		   File file = new File(currentSong.getPath());
-		   AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
-		   AudioFormat format = audioInputStream.getFormat();
-		   long frames = audioInputStream.getFrameLength();
-		   double durationInSeconds = ((frames + 0.0) / format.getFrameRate());
-		   currentDuration.setText(String.valueOf(durationInSeconds));
-	  }
-
+    	// Get duration of song as string
+    	String currentTime = mediaPlayer.getCurrentTime().toString();
+      	// Convert to float using this BS
+      	float convertedDuration = Float.parseFloat(currentTime.substring(0, currentTime.length() - 3));
+      	
+      	// Set current value to beginning
+      	musicSlider.setValue(convertedDuration);
+      	// Update duration of song in GUI
+      	int minutes = (int) mediaPlayer.getCurrentTime().toMinutes();
+      	int seconds = (int) mediaPlayer.getCurrentTime().toSeconds() % 60;
+  
+      	currentDuration.setText(minutes + ":" + String.format("%02d", seconds));
+      }
     }
 		////////////////////////////////////////
 		//==== MUSIC PLAYER FUNCTIONALITY ====//
@@ -614,6 +624,7 @@ public class Javafx extends Application {
         String path = "660452__seth_makes_sounds__free-commercial-song.wav";
         media = new Media(new File(path).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
+	    
         //look into this!!!!!!!!!!!!!!!
         mediaPlayer.setOnEndOfMedia( () -> {MediaManager.playNext();});
         //music plays on default, this is temp n for testing
