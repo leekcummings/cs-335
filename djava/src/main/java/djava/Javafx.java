@@ -128,6 +128,7 @@ public class Javafx extends Application {
 	             mediaPlayer.play();
 	         }
 	     });
+    	mediaPlayer.setOnEndOfMedia( () -> {MediaManager.playNext();});
     	updatePlayBarText(song);
     }
     
@@ -147,9 +148,9 @@ public class Javafx extends Application {
     	// Slider stuff
     	musicSlider.setMin(0.0);    
     	// Remove previously highlighted cells
-    	queue.getSelectionModel().getSelectedCells().clear();
-    	// Select current song as selected
-    	queue.getSelectionModel().select(MediaManager.queueIndex);
+//    	queue.getSelectionModel().getSelectedCells().clear();
+//    	// Select current song as selected
+//    	queue.getSelectionModel().select(MediaManager.queueIndex);
     }
 
     public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
@@ -574,6 +575,7 @@ public class Javafx extends Application {
         	table.setOnMouseClicked(event ->{
         		if(event.getClickCount() == 2)  {
         			//basically start playing the song
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
         			MediaManager.clearQueue();
         			MediaManager.addToFront(table.getSelectionModel().getSelectedItem());
         			playSong(table.getSelectionModel().getSelectedItem());	
