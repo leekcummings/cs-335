@@ -50,6 +50,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -252,7 +253,7 @@ public class Javafx extends Application {
 			    	///////////////////////
     	/// // TOP BAR ITEMS (DOESN'T INCLUDE TABS FOR MUSIC)
     	HBox topBar = new HBox();
-    	int topBarWidth = 400;
+    	int topBarWidth = 1200;
     	topBar.setMaxWidth(topBarWidth);
     	topBar.setPrefWidth(Double.MAX_VALUE);
     	topBar.getStyleClass().add("buttonBar");
@@ -271,6 +272,8 @@ public class Javafx extends Application {
         comboBox.setEditable(false); 
         comboBox.setValue("All");
 
+        Region spacer = new Region();
+        spacer.setPrefWidth(1000);
         //------------------------------------------------
         
         
@@ -365,7 +368,7 @@ public class Javafx extends Application {
 			    	/////////////////////////////////////////			
 			    	// ===== SETTING TOP BAR ELEMETS ===== //
 			    	/////////////////////////////////////////
-        topBar.getChildren().addAll(searchBar, comboBox, helpButton, settingsButton);
+        topBar.getChildren().addAll(searchBar, comboBox, spacer, helpButton, settingsButton);
 
 
         
@@ -613,15 +616,19 @@ public class Javafx extends Application {
 				//////////////////////////
         //all of the stuff below is for the play bar
         HBox playBar = new HBox();
-        int playBarWidth = 1000;
+        int playBarWidth = 1200;
     	playBar.setMaxWidth(playBarWidth);
     	playBar.autosize();
+    	playBar.setAlignment(Pos.CENTER);
+    	playBar.getStyleClass().add("playBar");
     	
     	//BUTTONS===============================
-    	Button playButton = new Button("|>");
-    	Button pauseButton = new Button("||");
-    	Button nextButton = new Button(">>");
-    	Button lastButton = new Button("<<");
+    	Button playButton = new Button("▶");
+    	Button pauseButton = new Button("⏸");
+    	Button nextButton = new Button("▶▶");
+    	nextButton.setPrefWidth(50);
+    	Button lastButton = new Button("◀◀");
+    	lastButton.setPrefWidth(50);
     	Button clearQueueButton = new Button("Clear Queue");
     	Button shuffleQueueButton = new Button("Shuffle Queue");
 

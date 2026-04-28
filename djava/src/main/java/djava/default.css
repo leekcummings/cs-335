@@ -69,3 +69,7 @@
 .popup {
 	-fx-background-color: white;
 }
+
+.playBar .button {
+	-fx-font-size: 14px;
+}
