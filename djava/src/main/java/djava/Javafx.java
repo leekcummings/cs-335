@@ -70,7 +70,7 @@ public class Javafx extends Application {
 	MediaView mediaView;
 	static ArrayList<TableView<Song>> tables = new ArrayList<>();
 	Slider volumeSlider;
-	static Duration lastDet = new Duration(2000000);
+	static Duration lastDet = new Duration(2000);
 	static ArrayList<Song> songs;
 	Label songLabel = new Label();
 	TableColumn<Song,String> title;
@@ -90,6 +90,7 @@ public class Javafx extends Application {
     static //static ImageIcon imageIcon = null;
     Image image;
     static ImageView imageView;
+    static Button playButton;
 
 	
     public static void main(String[] args) {
@@ -98,10 +99,13 @@ public class Javafx extends Application {
    
     /// PLAY SONG WITH MEDIA PLAYER
     public static void playSong(Song song) {
+    	playButton.setText("||");
+    	double vol = mediaPlayer.getVolume();
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
     	// Update playbar label
     	mediaPlayer = new MediaPlayer(media);
+    	mediaPlayer.setVolume(vol);
     	mediaPlayer.setOnReady(new Runnable() {
 
 	         @Override
@@ -122,14 +126,25 @@ public class Javafx extends Application {
 
 	             int minutes = (int) media.getDuration().toMinutes();
 	    	     int seconds = (int) media.getDuration().toSeconds() % 60;
-	    	     System.out.println(minutes + ":" + seconds);
-	    	     maxDuration.setText(minutes + ":" + seconds);
+	    	     //System.out.println(minutes + ":" + seconds);
+	    	     maxDuration.setText(String.format("%02d:%02d", minutes, seconds));
 
 	             // play if you want
 	             mediaPlayer.play();
 	         }
 	     });
+    	mediaPlayer.setOnEndOfMedia( () -> {MediaManager.playNext();});
     	updatePlayBarText(song);
+    }
+    
+    public void playPause() {
+    	if (mediaPlayer.getStatus() == Status.PLAYING) {
+    		mediaPlayer.pause();
+    		playButton.setText("|>");
+    	} else {
+    		mediaPlayer.play();
+    		playButton.setText("||");
+    	}
     }
     
     /// UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
@@ -148,11 +163,36 @@ public class Javafx extends Application {
     	// Slider stuff
     	musicSlider.setMin(0.0);    
     	// Remove previously highlighted cells
-    	queue.getSelectionModel().getSelectedCells().clear();
+//    	if (queue.getSelectionModel().getSelectedCells() != null) {
+//    		queue.getSelectionModel().getSelectedCells().clear();
+//    	}
     	// Select current song as selected
     	queue.getSelectionModel().select(MediaManager.queueIndex);
     }
-
+    
+    public void updateVolume(double newVol) {
+    	mediaPlayer.setVolume(newVol);
+    }
+    
+    public void help() {
+    	Song rick = new Song("NEVER GONNA GIVE YOU UP","NEVER GONNA", "0","LET YOU DOWN","Rick-roll.mp3","");
+    	MediaManager.queueList.clear();
+    	MediaManager.queueIndex = 0;
+    	
+    	for(int i = 0; i<100; i++) {
+    		MediaManager.addToBack(rick);
+    	}
+    }
+    
+    public void updateSongTime(double newTime) {
+    	if(newTime > mediaPlayer.getCurrentTime().toMillis() + 3000 || newTime < mediaPlayer.getCurrentTime().toMillis() - 1000) {
+    		mediaPlayer.stop();
+        	mediaPlayer.setStartTime(new Duration(newTime));
+        	mediaPlayer.play();
+    	}
+    	
+    }
+    
     public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
       if (mediaPlayer.getStatus() == Status.PLAYING) {
     	// Get duration of song as string
@@ -166,7 +206,7 @@ public class Javafx extends Application {
       	int minutes = (int) mediaPlayer.getCurrentTime().toMinutes();
       	int seconds = (int) mediaPlayer.getCurrentTime().toSeconds() % 60;
   
-      	currentDuration.setText(minutes + ":" + String.format("%02d", seconds));
+      	currentDuration.setText(String.format("%02d:%02d", minutes, seconds));
       }
     }
 		////////////////////////////////////////
@@ -308,6 +348,9 @@ public class Javafx extends Application {
  
         // when button is pressed
         settingsButton.setOnAction(settingsEvent);
+        helpButton.setOnAction(event ->{
+        	help();
+        });
         //------------------------------------------------
         
 
@@ -577,6 +620,7 @@ public class Javafx extends Application {
         	table.setOnMouseClicked(event ->{
         		if(event.getClickCount() == 2)  {
         			//basically start playing the song
+        			System.out.print(table.getSelectionModel().getSelectedItem() + "GOT GOT GOT");
         			MediaManager.clearQueue();
         			MediaManager.addToFront(table.getSelectionModel().getSelectedItem());
         			playSong(table.getSelectionModel().getSelectedItem());	
@@ -623,25 +667,33 @@ public class Javafx extends Application {
     	playBar.getStyleClass().add("playBar");
     	
     	//BUTTONS===============================
+<<<<<<< HEAD
     	Button playButton = new Button("▶");
     	Button pauseButton = new Button("⏸");
     	Button nextButton = new Button("▶▶");
     	nextButton.setPrefWidth(50);
     	Button lastButton = new Button("◀◀");
     	lastButton.setPrefWidth(50);
+=======
+    	playButton = new Button();
+    	playButton.setText("|>");
+    	//Button pauseButton = new Button("||");
+    	Button nextButton = new Button(">>");
+    	Button lastButton = new Button("<<");
+>>>>>>> branch 'main' of git@github.com:leekcummings/cs-335.git
     	Button clearQueueButton = new Button("Clear Queue");
     	Button shuffleQueueButton = new Button("Shuffle Queue");
 
     	
     	clearQueueButton.setOnAction(event -> {MediaManager.clearQueue();});
     	shuffleQueueButton.setOnAction(event -> {MediaManager.shuffleQueue();});
-    	playButton.setOnAction(event -> {mediaPlayer.play();});
-        pauseButton.setOnAction(event -> {mediaPlayer.pause();});
+    	playButton.setOnAction(event -> {playPause();});
+//        pauseButton.setOnAction(event -> {mediaPlayer.pause();});
         nextButton.setOnAction(event -> {MediaManager.playNext();});
         lastButton.setOnAction(event -> {MediaManager.playLast();});
 
     	playButton.setMinWidth(50);
-    	pauseButton.setMinWidth(50);
+//    	pauseButton.setMinWidth(50);
     	nextButton.setMinWidth(35);
     	lastButton.setMinWidth(35);
     	clearQueueButton.setMinWidth(80);
@@ -653,8 +705,23 @@ public class Javafx extends Application {
     	
     	volumeSlider = new Slider();        
     	volumeSlider.setPrefWidth(100);
-    	volumeSlider.setMaxWidth(130);
+    	volumeSlider.setMaxWidth(100);
     	volumeSlider.setMinWidth(80);
+    	volumeSlider.setMin(0.0);
+    	volumeSlider.setMax(1.0);
+    	volumeSlider.setValue(1.0);
+    	volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+             @Override
+             public void changed(
+                ObservableValue<? extends Number> observableValue, 
+                Number oldValue, 
+                Number newValue) { 
+            	 //System.out.println(newValue);
+                   updateVolume((double) newValue);
+               }
+         });
+
     	
     	
     	//=======================================
@@ -682,6 +749,18 @@ public class Javafx extends Application {
         image = new Image("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwiki.theplaz.com%2Fw%2Fimages%2FWindows_Media_Player_11_Default_Album_Art.jpg&f=1&nofb=1&ipt=8deeb4603d19794fe2904964d2f06974d22f01b6199e86b8a297d1ae2f3e6a0e");
         imageView = new ImageView(image);
         imageView.minWidth(200);
+        musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+            public void changed(
+               ObservableValue<? extends Number> observableValue, 
+               Number oldValue, 
+               Number newValue) { 
+           	 //System.out.println(newValue);
+                  updateSongTime((double) newValue);
+              }
+        });
+
         
         
         // Layout for song playback
@@ -691,7 +770,7 @@ public class Javafx extends Application {
 
         //button actions (PLAY N PAUSE)
         //idk if the mediaview there is necessary
-        playBar.getChildren().addAll(songLabel, lastButton,pauseButton,playButton,imageView,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton, shuffleQueueButton);
+        playBar.getChildren().addAll(songLabel, lastButton,playButton,imageView,currentDuration,songPlaybackLayout,maxDuration,nextButton,volumeLabel,volumeSlider,clearQueueButton, shuffleQueueButton);
         playBar.getStyleClass().add("buttonBar");
         playBar.setAlignment(Pos.CENTER);
      
@@ -739,6 +818,8 @@ public class Javafx extends Application {
         queue.minWidth(2000);
         queue.maxWidth(2000);
         queue.prefWidth(2000);
+        //queue.mouseTransparentProperty().set(true);
+        queue.setOnMouseClicked(null);
         //tabPane.setTabMinHeight(28);
         
         //adding the elements to the borderpane, you have to do them

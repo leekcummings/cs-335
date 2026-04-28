@@ -19,6 +19,7 @@ public class MediaManager {
     	}
     	queueList.add(song);
     	Javafx.queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    	Javafx.queue.refresh();
     }
 	
     public static void addManyToBack(ArrayList<Song> list) {
@@ -27,10 +28,12 @@ public class MediaManager {
     	}
     }
     
+    
+    
     /// ADD TO FRONT
     /// Add one/many songs as the FIRST item in the queue
     public static void addToFront(Song song) {
-    	int queueIndex = 0;
+    	//int queueIndex = 0;
     	if(queueList.size() > 0) {
     		queueList.add(queueIndex+1,song);
     	}else {
@@ -38,6 +41,7 @@ public class MediaManager {
     		Javafx.playSong(song);
     	}
     	Javafx.queue.setItems((ObservableList<Song>) FXCollections.observableArrayList(queueList));
+    	Javafx.queue.refresh();
     }
     
     public static void addManyToNext(ArrayList<Song> list) {
@@ -55,6 +59,7 @@ public class MediaManager {
     		queueIndex++;
     		Javafx.playSong(queueList.get(queueIndex));
     	}
+    	Javafx.queue.refresh();
     }
     
     /// PLAY LAST
@@ -70,6 +75,7 @@ public class MediaManager {
     	} else {
     		Javafx.playSong(queueList.get(queueIndex));
     	}
+    	Javafx.queue.refresh();
     }
     
     /// I HAVE NO IDEA WHAT THESE ARE FOR
