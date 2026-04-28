@@ -2,6 +2,15 @@ package djava;
 
 import java.io.File; //used for checking file and making file
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class ConfigManager {
@@ -18,6 +27,8 @@ public class ConfigManager {
 	File programDir;
 	File mediaFile;
 	
+	Map<String, String> config;
+	
 	//initializing method
 	ConfigManager(){
 		getOS(); //getting OS so that the config file can be made in the right spot
@@ -27,7 +38,11 @@ public class ConfigManager {
 		} else {System.out.println("NOTE: Program directory already exists");}
 		if(!fileExists()) { //check if file exists
 			makeFile();
-		} else {System.out.println("NOTE: Config file already exists");}
+			load();
+		} else {
+			System.out.println("NOTE: Config file already exists");
+			load();
+		}
 		if(!mediaFileExists()) {
 			makeMediaFile();
 		}
@@ -83,19 +98,39 @@ public class ConfigManager {
 	}
 	
 	void load() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		File file = new File(filePath);
+		String abPath = file.getAbsolutePath();
+		Path filePath = Path.of(abPath);
+		String json = null;
+		try {
+			json = Files.readString(filePath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(json);
+		Map<String, String> map = null;
+		try {
+			map = objectMapper.readValue(json, new TypeReference<Map<String,String>>(){});
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		config = map;
 		//this is going to parse the things inside the config file
 	}
 	
 	void makeFile() {
 		try {
-			configFile.createNewFile();
+			File config = new File(filePath);
 			System.out.println("NOTE: Config file made.");
 			MusicDirectory.setDefaultDirectory(); //only want this to run
-			//when the config file is first being made so that it doesn't
-			//write over whenever they open the program b/c that would be annoying
 			
-			//default data in config file
-			//NEED TO WRITE
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, String> map = Map.of(
+					"directoryPath", directoryPath);
+			objectMapper.writeValue(config, map);
 			
 		} catch (IOException e) {
 			System.out.println("ERROR: Unable to make config file.");

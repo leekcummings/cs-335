@@ -667,20 +667,12 @@ public class Javafx extends Application {
     	playBar.getStyleClass().add("playBar");
     	
     	//BUTTONS===============================
-<<<<<<< HEAD
     	Button playButton = new Button("▶");
     	Button pauseButton = new Button("⏸");
     	Button nextButton = new Button("▶▶");
     	nextButton.setPrefWidth(50);
     	Button lastButton = new Button("◀◀");
     	lastButton.setPrefWidth(50);
-=======
-    	playButton = new Button();
-    	playButton.setText("|>");
-    	//Button pauseButton = new Button("||");
-    	Button nextButton = new Button(">>");
-    	Button lastButton = new Button("<<");
->>>>>>> branch 'main' of git@github.com:leekcummings/cs-335.git
     	Button clearQueueButton = new Button("Clear Queue");
     	Button shuffleQueueButton = new Button("Shuffle Queue");
 
