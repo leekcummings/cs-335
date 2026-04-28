@@ -19,26 +19,31 @@ public class ConfigManager {
 	static ConfigManager instance;
 	static public OS opSys;
 	
-	String filePath;
+	static String filePath;
 	static String directoryPath;
+	static String musicDirectoryPath;
 	static String mediaPath;
 	
 	File configFile;
 	File programDir;
 	File mediaFile;
 	
-	Map<String, String> config;
+	static Map<String, String> config;
 	
 	//initializing method
 	ConfigManager(){
 		getOS(); //getting OS so that the config file can be made in the right spot
+		if(opSys == OS.WINDOWS) {
+			musicDirectoryPath = System.getProperty("user.home") + "\\Music"; //this used to be ("user.home") + "\\{USERNAME}\\Music"
+		}else {musicDirectoryPath = System.getProperty("user.home") + "/Music";} //but that doesn't work on windows, corrected here
+		System.out.println("MusicDirectoryPath: " + musicDirectoryPath);
+
 		setFileDirPath(); //sets the file path based on os\
 		if(!dirExists()) {
 			makeDir();
 		} else {System.out.println("NOTE: Program directory already exists");}
 		if(!fileExists()) { //check if file exists
 			makeFile();
-			load();
 		} else {
 			System.out.println("NOTE: Config file already exists");
 			load();
@@ -46,12 +51,6 @@ public class ConfigManager {
 		if(!mediaFileExists()) {
 			makeMediaFile();
 		}
-		
-	}
-	
-	public //public classes below
-	void edit() {
-		//you will be able to edit the config file here
 	}
 	
 	private //private classes below
@@ -125,16 +124,39 @@ public class ConfigManager {
 		try {
 			File config = new File(filePath);
 			System.out.println("NOTE: Config file made.");
-			MusicDirectory.setDefaultDirectory(); //only want this to run
-			
+						
 			ObjectMapper objectMapper = new ObjectMapper();
 			Map<String, String> map = Map.of(
-					"directoryPath", directoryPath);
+					"musicDirectoryPath", musicDirectoryPath);
 			objectMapper.writeValue(config, map);
+			load();
+			MusicDirectory.setDefaultDirectory(); //only want this to run
 			
 		} catch (IOException e) {
 			System.out.println("ERROR: Unable to make config file.");
 		}
+	}
+	
+	static void changeConfig(String key, String value) {
+		config.put(key, value);
+		// Code taken from Geeks for Geeks https://www.geeksforgeeks.org/java/delete-file-using-java/
+        File file = new File(filePath);
+      	// Delete the File
+        if (file.delete()) {
+            System.out.println("File deleted successfully");
+        }
+        else {
+            System.out.println("Failed to delete the file");
+        }
+        System.out.println("NOTE: Config file changed.");
+        ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			objectMapper.writeValue(file, config);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	void makeMediaFile() {

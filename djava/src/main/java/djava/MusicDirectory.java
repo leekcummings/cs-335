@@ -8,10 +8,7 @@ public class MusicDirectory {
 	//this function is only called when config file is getting made
 	static void setDefaultDirectory(){ //gets operating sys from config
 								//and sets the correct default path
-		if(ConfigManager.opSys == OS.WINDOWS) {
-		directory = System.getProperty("user.home") + "\\Music"; //this used to be ("user.home") + "\\{USERNAME}\\Music"
-		}else {directory = System.getProperty("user.home") + "/Music";} //but that doesn't work on windows, corrected here
-		System.out.println("MusicDirectoryPath: " + directory);
+		directory = ConfigManager.config.get("musicDirectoryPath");
 	}
 	
 	static void set(String newFileDirectoryPath) {

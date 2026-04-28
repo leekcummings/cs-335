@@ -265,6 +265,7 @@ public class Javafx extends Application {
     			File file = directoryChooser.showDialog(new Stage());
     			if(file != null) {
     				directoryLabel.setText(file.toString());
+    				ConfigManager.changeConfig("musicDirectoryPath", file.toString());
     			}
     			
     	});
