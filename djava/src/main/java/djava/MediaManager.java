@@ -28,10 +28,12 @@ public class MediaManager {
     	}
     }
     
+    
+    
     /// ADD TO FRONT
     /// Add one/many songs as the FIRST item in the queue
     public static void addToFront(Song song) {
-    	int queueIndex = 0;
+    	//int queueIndex = 0;
     	if(queueList.size() > 0) {
     		queueList.add(queueIndex+1,song);
     	}else {
