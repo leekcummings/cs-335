@@ -99,7 +99,7 @@ public class Javafx extends Application {
    
     /// PLAY SONG WITH MEDIA PLAYER
     public static void playSong(Song song) {
-    	playButton.setText("||");
+    	playButton.setText("⏸");
     	double vol = mediaPlayer.getVolume();
     	mediaPlayer.stop();
     	media = new Media(new File(song.getPath()).toURI().toString());
@@ -140,12 +140,13 @@ public class Javafx extends Application {
     public void playPause() {
     	if (mediaPlayer.getStatus() == Status.PLAYING) {
     		mediaPlayer.pause();
-    		playButton.setText("|>");
+    		playButton.setText("▶");
     	} else {
     		mediaPlayer.play();
-    		playButton.setText("||");
+    		playButton.setText("⏸");
     	}
     }
+    
     
     /// UPDATE THE LABEL THAT SHOWS THE CURRENT SONG
     public static void updatePlayBarText(Song song) {
@@ -185,12 +186,11 @@ public class Javafx extends Application {
     }
     
     public void updateSongTime(double newTime) {
-    	if(newTime > mediaPlayer.getCurrentTime().toMillis() + 3000 || newTime < mediaPlayer.getCurrentTime().toMillis() - 1000) {
-    		mediaPlayer.stop();
+		if(newTime > mediaPlayer.getCurrentTime().toMillis() + 3000 || newTime < mediaPlayer.getCurrentTime().toMillis() - 1000) {
+    		mediaPlayer.pause();
         	mediaPlayer.setStartTime(new Duration(newTime));
         	mediaPlayer.play();
     	}
-    	
     }
     
     public static void updateCurrentDuration() throws UnsupportedAudioFileException, IOException {
@@ -668,7 +668,7 @@ public class Javafx extends Application {
     	playBar.getStyleClass().add("playBar");
     	
     	//BUTTONS===============================
-    	Button playButton = new Button("▶");
+    	playButton = new Button("▶");
     	Button pauseButton = new Button("⏸");
     	Button nextButton = new Button("▶▶");
     	nextButton.setPrefWidth(50);
